@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { generateTraits, getEnabledNFTs, getMaxSupply, getRarityColor } from '@/lib/nftUtils';
-import { Sparkles, Info } from 'lucide-react';
+import { Sparkles, Info, Eye } from 'lucide-react';
 
 interface MintPreviewProps {
     startId: number;
@@ -47,6 +48,8 @@ export function MintPreview({ startId, quantity }: MintPreviewProps) {
     const enabledNfts = getEnabledNFTs();
     const maxSupply = getMaxSupply();
 
+    const [isHovered, setIsHovered] = useState(false);
+
     // For MVP: Show the single enabled NFT
     if (enabledNfts.length === 1) {
         const nft = enabledNfts[0];
@@ -66,34 +69,62 @@ export function MintPreview({ startId, quantity }: MintPreviewProps) {
 
                 {/* Single NFT Preview */}
                 <motion.div
-                    className={`relative rounded-2xl overflow-hidden border-2 ${borderColor} bg-black/40 backdrop-blur-sm`}
+                    className={`relative rounded-2xl overflow-hidden border-2 ${borderColor} bg-black/40 backdrop-blur-sm group`}
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
                 >
                     {/* Glow Effect for Legendary */}
                     {traits.rarity === 'Legendary' && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-transparent to-yellow-500/10 animate-pulse" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-transparent to-yellow-500/10 animate-pulse z-0" />
                     )}
 
-                    {/* Bird Image */}
-                    <div className="aspect-square relative bg-gradient-to-br from-gray-900 to-black">
+                    {/* Bird Image + Video on Hover */}
+                    <div className="aspect-square relative bg-black overflow-hidden cursor-pointer">
+                        {/* Static Image */}
                         <img
                             src={traits.image}
                             alt={traits.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
 
+                        {/* Video Animation on Hover */}
+                        {isHovered && traits.video && (
+                            <video
+                                src={traits.video}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover z-10 opacity-0 transition-opacity duration-500"
+                                onLoadedData={(e) => e.currentTarget.classList.replace('opacity-0', 'opacity-100')}
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            />
+                        )}
+
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-20 pointer-events-none" />
+
                         {/* Rarity Badge Overlay */}
-                        <div className="absolute top-3 right-3">
+                        <div className="absolute top-3 right-3 z-30">
                             <span className={`text-xs px-3 py-1.5 rounded-full font-rajdhani font-bold uppercase ${badgeColor}`}>
                                 {traits.rarity}
+                            </span>
+                        </div>
+
+                        {/* Hover hint */}
+                        <div className="absolute bottom-3 right-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <span className="bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20 text-xs text-white font-rajdhani font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                <Eye size={14} />
+                                Live Preview
                             </span>
                         </div>
                     </div>
 
                     {/* Info Section */}
-                    <div className="p-4 space-y-2 bg-gradient-to-b from-black/60 to-black/90">
+                    <div className="p-4 space-y-2 bg-gradient-to-b from-black/60 to-black/90 relative z-10">
                         <div className="flex justify-between items-center">
                             <span className="font-orbitron text-white font-bold text-lg">
                                 {traits.species}

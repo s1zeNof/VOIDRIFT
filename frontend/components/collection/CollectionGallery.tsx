@@ -58,7 +58,7 @@ export function CollectionGallery() {
                                 <img
                                     src={traits.image}
                                     alt={traits.name}
-                                    className="absolute inset-0 w-full h-full object-cover"
+                                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
 
                                 {/* Video on Hover/Tap */}
