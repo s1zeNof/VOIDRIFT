@@ -1,0 +1,34 @@
+{
+  "name": "Riftbird #1",
+  "description": "A mystical voxel owl from the Rift dimension. This wise creature holds ancient knowledge of the void.",
+  "image": "ipfs://bafybeifx6zfb2wpyqealdhxaxxsl4o3a3rgrxvbk6pgd24zbt3kgdxxepa/1.png",
+  "external_url": "https://riftbirds.xyz/bird/1",
+  "attributes": [
+    {
+      "trait_type": "Species",
+      "value": "Owl"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    },
+    {
+      "trait_type": "Element",
+      "value": "Void"
+    },
+    {
+      "trait_type": "Stage",
+      "value": "Hatchling"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Generation",
+      "value": 1
+    },
+    {
+      "display_type": "boost_percentage",
+      "trait_type": "Wisdom",
+      "value": 25
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment variables (SECRETS - NEVER commit)
+.env
+.env.local
+.env.*.local
+contracts/.env
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Build artifacts
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+
+# TypeScript
+*.tsbuildinfo
