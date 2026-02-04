@@ -200,78 +200,95 @@ export default function ProfilePage() {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {ownedTokenIds.map((id) => {
+                                const traits = generateTraits(id);
+                                const rarityColor = traits.rarity === 'Legendary' ? 'text-yellow-500' : traits.rarity === 'Mythic' ? 'text-red-500' : traits.rarity === 'Epic' ? 'text-purple-400' : 'text-gray-400';
 
                                 return (
                                     <div key={id} className={`bg-black/60 border rounded-xl overflow-hidden group transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,255,255,0.15)] ${simulating ? 'border-cyan-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]' : 'border-white/10 hover:border-primary/50'}`}>
 
-                                        {/* Image Area */}
+                                        {/* Image Area — Real NFT Image + Video on Hover */}
                                         <div
                                             onClick={() => setSelectedNftId(id)}
                                             onMouseEnter={() => setHoveredNftId(id)}
                                             onMouseLeave={() => setHoveredNftId(null)}
-                                            className={`aspect-square relative flex items-center justify-center overflow-hidden transition-all duration-1000 cursor-pointer ${simulating ? 'bg-black' : 'bg-gradient-to-br from-gray-900 to-black'}`}
+                                            className="aspect-square relative flex items-center justify-center overflow-hidden cursor-pointer bg-black"
                                         >
+                                            {/* NFT Image — always visible */}
+                                            <img
+                                                src={traits.image}
+                                                alt={traits.name}
+                                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            />
 
-                                            {simulating ? (
-                                                <>
-                                                    {/* Simulated Stage 3 Image */}
-                                                    <img
-                                                        src={generateTraits(id).image}
-                                                        alt="Evolved"
-                                                        className="absolute inset-0 w-full h-full object-cover animate-pulse transition-opacity duration-1000 transform group-hover:scale-110 transition-transform duration-700"
-                                                    />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                                                </>
-                                            ) : (
-                                                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent group-hover:opacity-40 transition-opacity" />
+                                            {/* Video overlay on hover */}
+                                            {_hoveredNftId === id && traits.video && (
+                                                <video
+                                                    src={traits.video}
+                                                    autoPlay
+                                                    loop
+                                                    muted
+                                                    playsInline
+                                                    className="absolute inset-0 w-full h-full object-cover z-10 opacity-0 transition-opacity duration-500"
+                                                    onLoadedData={(e) => e.currentTarget.classList.replace('opacity-0', 'opacity-100')}
+                                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                />
                                             )}
 
-                                            <span className={`text-5xl font-orbitron font-bold z-10 transition-colors duration-500 ${simulating ? 'text-cyan-300 drop-shadow-[0_0_15px_rgba(0,255,255,1)]' : 'text-white/10 group-hover:text-white/30'}`}>
-                                                #{id}
-                                            </span>
+                                            {/* Gradient overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none" />
+
+                                            {/* Rarity Badge */}
+                                            <div className="absolute top-3 left-3 z-20">
+                                                <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full backdrop-blur-md border ${
+                                                    traits.rarity === 'Legendary' ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-400' :
+                                                    traits.rarity === 'Mythic' ? 'bg-red-500/20 border-red-500/50 text-red-400' :
+                                                    traits.rarity === 'Epic' ? 'bg-purple-500/20 border-purple-500/50 text-purple-400' :
+                                                    'bg-white/10 border-white/20 text-gray-300'
+                                                }`}>
+                                                    {traits.rarity}
+                                                </span>
+                                            </div>
 
                                             {/* Stage Badge */}
                                             <div className={`absolute top-3 right-3 px-3 py-1 rounded backdrop-blur-md border flex items-center gap-2 transition-all duration-500 z-20
                                                 ${simulating ? 'bg-purple-900/80 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-black/60 border-white/10 text-white'}`}>
-
                                                 <Zap size={12} className={simulating ? "fill-cyan-300 text-cyan-300" : "text-yellow-400"} />
                                                 <span className="text-[10px] font-bold uppercase tracking-wider">
                                                     {simulating ? 'Stage 3' : 'Stage 1'}
                                                 </span>
                                             </div>
 
-                                            {/* Hover Overlay Hint */}
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-10">
-                                                <span className="px-4 py-2 bg-black/80 backdrop-blur border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">
-                                                    View Details
-                                                </span>
+                                            {/* Name overlay at bottom */}
+                                            <div className="absolute bottom-3 left-3 right-3 z-20">
+                                                <h3 className="font-orbitron font-bold text-white text-lg drop-shadow-lg">{traits.name}</h3>
+                                                <p className="text-xs text-gray-300 font-rajdhani">{traits.species} &bull; #{id}</p>
                                             </div>
                                         </div>
 
                                         <div className="p-5">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
-                                                    <h3 className="font-orbitron font-bold text-white text-lg">Riftwalker #{id}</h3>
                                                     <p className={`text-xs font-rajdhani uppercase tracking-wider transition-colors duration-500 ${simulating ? 'text-cyan-400' : 'text-gray-500'}`}>
                                                         {simulating ? 'Status: Awakened' : 'Status: Dormant'}
                                                     </p>
                                                 </div>
+                                                <span className={`text-xs font-bold ${rarityColor}`}>{traits.rarity}</span>
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-3 text-xs mb-4">
                                                 <div className="bg-white/5 rounded p-2 border border-white/5">
-                                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Origin</p>
-                                                    <p className="text-gray-300 font-mono">VOID</p>
+                                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Species</p>
+                                                    <p className="text-gray-300 font-mono">{traits.species}</p>
                                                 </div>
                                                 <div className="bg-white/5 rounded p-2 border border-white/5">
                                                     <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Class</p>
-                                                    <p className="text-gray-300 font-mono">{simulating ? 'Sentinel' : 'Unknown'}</p>
+                                                    <p className="text-gray-300 font-mono">{simulating ? 'Sentinel' : 'Hatchling'}</p>
                                                 </div>
                                             </div>
 
                                             <button
                                                 onClick={() => handleSetAvatar(id)}
-                                                className={`w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 border
+                                                className={`w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 border cursor-pointer
                                                     ${selectedAvatar === id
                                                         ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(0,255,255,0.2)]'
                                                         : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/30'
@@ -327,13 +344,19 @@ export default function ProfilePage() {
             <NFTDetailModal
                 isOpen={!!selectedNftId}
                 onClose={() => setSelectedNftId(null)}
-                nft={selectedNftId ? {
-                    id: selectedNftId,
-                    rarity: generateTraits(selectedNftId).rarity,
-                    isStaked: false,
-                    image: generateTraits(selectedNftId).image,
-                    attributes: generateTraits(selectedNftId).attributes
-                } : null}
+                nft={selectedNftId ? (() => {
+                    const t = generateTraits(selectedNftId);
+                    return {
+                        id: selectedNftId,
+                        rarity: t.rarity,
+                        isStaked: false,
+                        image: t.image,
+                        video: t.video,
+                        attributes: t.attributes,
+                        species: t.species,
+                        name: t.name,
+                    };
+                })() : null}
             />
 
             {/* Global Styles for Simulation */}
