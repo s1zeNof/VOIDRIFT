@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(timeout 15 npm run dev:*)",
+      "Bash(node scripts/full-deploy.js)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(wc:*)",
+      "Bash(npx hardhat compile:*)",
+      "Bash(npx hardhat run:*)",
+      "Bash(npx next build)",
+      "Bash(npm run lint)",
+      "Bash(gh auth:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: VOIDRIFT MVP Testnet\n\n- RiftbirdNFT contract deployed to Sepolia \\(0x2f848cC764C77b8EFEBd23cd69ECB2F66A53D52f\\)\n- NFT assets uploaded to IPFS via Pinata\n- Next.js 16 frontend with wagmi + RainbowKit\n- Minting, Staking, Profile, Collection, Whitelist pages\n- On-chain stats \\(totalSupply, maxSupply, mintPrice\\)\n- ETH balance display in profile\n- Transfer event-based token ownership tracking\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "Bash(npm install)",
+      "Bash(netstat:*)",
+      "Bash(wmic:*)",
+      "Bash(taskkill:*)",
+      "Bash(curl:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git restore:*)"
+    ]
+  }
+}
