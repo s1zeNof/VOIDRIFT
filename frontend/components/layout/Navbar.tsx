@@ -79,7 +79,7 @@ export function Navbar() {
 
             {/* Mobile Menu */}
             {mobileMenuOpen && (
-                <div className="md:hidden absolute top-20 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-white/10 p-4 flex flex-col space-y-4 animate-in slide-in-from-top-4">
+                <div className="md:hidden absolute top-20 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-white/10 p-4 flex flex-col space-y-4 animate-in slide-in-from-top-4 z-40">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
@@ -90,7 +90,7 @@ export function Navbar() {
                             {link.name}
                         </Link>
                     ))}
-                    <div className="pt-2">
+                    <div className="pt-2" onClick={() => setMobileMenuOpen(false)}>
                         <ConnectButton />
                     </div>
                 </div>

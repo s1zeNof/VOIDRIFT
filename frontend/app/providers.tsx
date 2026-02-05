@@ -47,6 +47,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <QueryClientProvider client={queryClient}>
                 <RainbowKitProvider
                     initialChain={sepolia}
+                    modalSize="compact"
+                    showRecentTransactions={true}
                     theme={darkTheme({
                         accentColor: '#00FFFF',
                         accentColorForeground: 'black',
