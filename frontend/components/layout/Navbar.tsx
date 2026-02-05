@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { MobileConnectButton } from '@/components/shared/MobileConnectButton';
 import { Container } from './Container';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -90,8 +91,8 @@ export function Navbar() {
                             {link.name}
                         </Link>
                     ))}
-                    <div className="pt-2" onClick={() => setMobileMenuOpen(false)}>
-                        <ConnectButton />
+                    <div className="pt-2">
+                        <MobileConnectButton />
                     </div>
                 </div>
             )}

@@ -25,7 +25,9 @@
       "Bash(gh pr create:*)",
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)"
     ]
   }
 }

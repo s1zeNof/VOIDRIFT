@@ -4,55 +4,21 @@ import * as React from 'react';
 import {
     RainbowKitProvider,
     darkTheme,
-    connectorsForWallets,
+    getDefaultConfig,
 } from '@rainbow-me/rainbowkit';
-import {
-    walletConnectWallet,
-    injectedWallet,
-    coinbaseWallet,
-    metaMaskWallet,
-} from '@rainbow-me/rainbowkit/wallets';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http } from 'wagmi';
+import { WagmiProvider } from 'wagmi';
 import { sepolia, baseSepolia } from 'wagmi/chains';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
 const projectId = '3c5d2dfdaa004c4fbaa896baf9ae60b7';
 
-// Detect if mobile
-const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-// On mobile: WalletConnect first (opens system wallet picker)
-// On desktop: Show individual wallets
-const connectors = connectorsForWallets(
-    [
-        {
-            groupName: 'Connect',
-            wallets: [
-                // WalletConnect opens Android/iOS system wallet picker
-                walletConnectWallet,
-                // Injected catches any in-app browser wallets
-                injectedWallet,
-                metaMaskWallet,
-                coinbaseWallet,
-            ],
-        },
-    ],
-    {
-        appName: 'VOIDRIFT',
-        projectId,
-    }
-);
-
-// Create wagmi config
-const config = createConfig({
-    connectors,
+// Use getDefaultConfig for simplicity - it handles wallets automatically
+const config = getDefaultConfig({
+    appName: 'VOIDRIFT',
+    projectId,
     chains: [sepolia, baseSepolia],
-    transports: {
-        [sepolia.id]: http(),
-        [baseSepolia.id]: http(),
-    },
     ssr: true,
 });
 
@@ -81,7 +47,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <QueryClientProvider client={queryClient}>
                 <RainbowKitProvider
                     initialChain={sepolia}
-                    modalSize="compact"
+                    modalSize="wide"
                     theme={darkTheme({
                         accentColor: '#00FFFF',
                         accentColorForeground: 'black',
