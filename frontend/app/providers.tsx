@@ -14,7 +14,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 const projectId = '3c5d2dfdaa004c4fbaa896baf9ae60b7';
 
-// Use getDefaultConfig - it handles wallets and RPC automatically
+// Use getDefaultConfig with proper metadata for WalletConnect mobile
 const config = getDefaultConfig({
     appName: 'VOIDRIFT',
     projectId,
