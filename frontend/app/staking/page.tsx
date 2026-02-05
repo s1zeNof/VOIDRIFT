@@ -14,6 +14,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Lock, Unlock } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEther, parseAbiItem } from 'viem';
+import { RewardsProjection } from '@/components/staking/RewardsProjection';
+import { RiftTokenTeaser } from '@/components/staking/RiftTokenTeaser';
 
 export default function StakingPage() {
     const { address, isConnected } = useAccount();
@@ -368,6 +370,12 @@ export default function StakingPage() {
                         )}
                     </div>
 
+                </div>
+
+                {/* Rewards Projection & Token Teaser Section */}
+                <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <RewardsProjection ownedTokenIds={[...walletIds, ...stakedIds]} />
+                    <RiftTokenTeaser />
                 </div>
             </Container>
         </div>

@@ -11,6 +11,9 @@ import { toast } from 'sonner';
 import { NFTDetailModal } from '@/components/collection/NFTDetailModal';
 import { generateTraits } from '@/lib/nftUtils';
 import { parseAbiItem, formatEther } from 'viem';
+import { FlockStats } from '@/components/profile/FlockStats';
+import { ShareCard } from '@/components/profile/ShareCard';
+import { RarityBadge } from '@/components/shared/RarityBadge';
 
 export default function ProfilePage() {
     const [simulating, setSimulating] = useState(false);
@@ -178,6 +181,24 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Flock Stats Section */}
+                {balanceNum > 0 && (
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-orbitron font-bold text-white mb-6 flex items-center gap-2 border-b border-white/10 pb-4">
+                            <Sparkles className="text-primary" size={24} />
+                            Your Flock Stats
+                        </h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2">
+                                <FlockStats tokenIds={ownedTokenIds} firstMintDate={null} />
+                            </div>
+                            <div>
+                                <ShareCard tokenIds={ownedTokenIds} address={address} />
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Gallery */}
                 <div>

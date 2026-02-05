@@ -23,6 +23,7 @@ export function Navbar() {
         { name: 'Mint', href: '/mint' },
         { name: 'Staking', href: '/staking' },
         { name: 'Collection', href: '/collection' },
+        { name: 'Leaderboard', href: '/leaderboard' },
         { name: 'Profile', href: '/profile' },
     ];
 

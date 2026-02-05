@@ -199,3 +199,97 @@ export function getRarityColor(rarity: string): string {
 export function getStakingMultiplier(rarity: string): number {
     return COLLECTION_CONFIG.stakingMultipliers[rarity as keyof typeof COLLECTION_CONFIG.stakingMultipliers] || 1;
 }
+
+// =============================================================================
+// RARITY SYSTEM
+// =============================================================================
+
+export const RARITY_ORDER = ['Common', 'Rare', 'Epic', 'Legendary', 'Mythic'] as const;
+
+export const RARITY_SCORES: Record<string, number> = {
+    Common: 10,
+    Rare: 25,
+    Epic: 50,
+    Legendary: 100,
+    Mythic: 200,
+};
+
+/**
+ * Calculate total rarity score for a collection of token IDs
+ */
+export function calculateRarityScore(tokenIds: string[]): number {
+    return tokenIds.reduce((total, id) => {
+        const nft = getNFTById(Number(id));
+        if (!nft) return total;
+        return total + (RARITY_SCORES[nft.rarity] || 0);
+    }, 0);
+}
+
+/**
+ * Get rarity breakdown for a collection of token IDs
+ */
+export function getRarityBreakdown(tokenIds: string[]): Record<string, number> {
+    const breakdown: Record<string, number> = {};
+
+    tokenIds.forEach(id => {
+        const nft = getNFTById(Number(id));
+        if (nft) {
+            breakdown[nft.rarity] = (breakdown[nft.rarity] || 0) + 1;
+        }
+    });
+
+    return breakdown;
+}
+
+/**
+ * Calculate full collection stats
+ */
+export function calculateCollectionStats(tokenIds: string[]): {
+    score: number;
+    breakdown: Record<string, number>;
+    totalNFTs: number;
+    highestRarity: string;
+} {
+    const breakdown = getRarityBreakdown(tokenIds);
+    const score = calculateRarityScore(tokenIds);
+
+    // Find highest rarity owned
+    let highestRarity = 'Common';
+    for (const rarity of [...RARITY_ORDER].reverse()) {
+        if (breakdown[rarity] && breakdown[rarity] > 0) {
+            highestRarity = rarity;
+            break;
+        }
+    }
+
+    return {
+        score,
+        breakdown,
+        totalNFTs: tokenIds.length,
+        highestRarity,
+    };
+}
+
+/**
+ * Sort token IDs by rarity (highest first)
+ */
+export function sortByRarity(tokenIds: string[], descending = true): string[] {
+    return [...tokenIds].sort((a, b) => {
+        const nftA = getNFTById(Number(a));
+        const nftB = getNFTById(Number(b));
+        const scoreA = nftA ? (RARITY_SCORES[nftA.rarity] || 0) : 0;
+        const scoreB = nftB ? (RARITY_SCORES[nftB.rarity] || 0) : 0;
+        return descending ? scoreB - scoreA : scoreA - scoreB;
+    });
+}
+
+/**
+ * Filter token IDs by rarity
+ */
+export function filterByRarity(tokenIds: string[], rarities: string[]): string[] {
+    if (rarities.length === 0) return tokenIds;
+    return tokenIds.filter(id => {
+        const nft = getNFTById(Number(id));
+        return nft && rarities.includes(nft.rarity);
+    });
+}

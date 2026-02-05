@@ -1,19 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ALL_SPECIES_PREVIEW, generateTraits, getRarityColor } from '@/lib/nftUtils';
 import { NFTDetailModal } from './NFTDetailModal';
+import { RarityBadge } from '@/components/shared/RarityBadge';
 
-export function CollectionGallery() {
+interface CollectionGalleryProps {
+    selectedRarities?: string[];
+}
+
+export function CollectionGallery({ selectedRarities = [] }: CollectionGalleryProps) {
     // Track hover state for video playback
     const [hoveredId, setHoveredId] = useState<string | null>(null);
     const [selectedNFT, setSelectedNFT] = useState<any>(null);
 
+    // Filter items by rarity
+    const filteredItems = useMemo(() => {
+        if (selectedRarities.length === 0) return ALL_SPECIES_PREVIEW;
+        return ALL_SPECIES_PREVIEW.filter(item => selectedRarities.includes(item.rarity));
+    }, [selectedRarities]);
+
+    if (filteredItems.length === 0) {
+        return (
+            <div className="text-center py-20">
+                <p className="text-gray-400 font-rajdhani text-lg">
+                    No Riftbirds match the selected filters.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {ALL_SPECIES_PREVIEW.map((previewItem) => {
+                {filteredItems.map((previewItem, index) => {
                     const id = previewItem.id;
                     const traits = generateTraits(id);
                     const isHovered = hoveredId === id;
@@ -36,6 +57,10 @@ export function CollectionGallery() {
                         borderColor = 'border-yellow-500/50';
                         shadowColor = 'hover:shadow-[0_0_30px_rgba(234,179,8,0.4)]';
                         titleColor = 'text-yellow-200';
+                    } else if (traits.rarity === 'Mythic') {
+                        borderColor = 'border-pink-500/50';
+                        shadowColor = 'hover:shadow-[0_0_30px_rgba(236,72,153,0.4)]';
+                        titleColor = 'text-pink-200';
                     }
 
                     return (
@@ -43,7 +68,7 @@ export function CollectionGallery() {
                             key={id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
+                            transition={{ duration: 0.5, delay: index * 0.05 }}
                             className={`group relative bg-black/60 border ${borderColor} rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] ${shadowColor}`}
                             onMouseEnter={() => setHoveredId(id)}
                             onMouseLeave={() => setHoveredId(null)}
@@ -78,6 +103,11 @@ export function CollectionGallery() {
                                     />
                                 )}
 
+                                {/* Rarity Badge - Top Right */}
+                                <div className="absolute top-3 right-3 z-20">
+                                    <RarityBadge rarity={traits.rarity} size="sm" />
+                                </div>
+
                                 {/* Info Overlay */}
                                 <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 to-transparent pt-10 z-20 pointer-events-none">
                                     <h3 className={`font-orbitron font-bold text-lg ${titleColor}`}>
@@ -86,9 +116,6 @@ export function CollectionGallery() {
                                     <div className="flex justify-between items-center mt-1">
                                         <span className="text-xs font-rajdhani uppercase tracking-wider text-gray-400">
                                             Type {(Number(id) % 2 === 0 ? 1 : 2)}
-                                        </span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/5 uppercase font-bold tracking-widest ${titleColor}`}>
-                                            {traits.rarity}
                                         </span>
                                     </div>
                                 </div>
