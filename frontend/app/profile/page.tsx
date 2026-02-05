@@ -132,11 +132,17 @@ export default function ProfilePage() {
                         {/* Avatar */}
                         <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-900 via-blue-900 to-black border border-primary/30 flex items-center justify-center relative overflow-hidden group shadow-[0_0_20px_rgba(0,255,255,0.2)]">
                             {selectedAvatar ? (
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                                    <span className="text-3xl font-orbitron font-bold text-white drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">
+                                <>
+                                    <img
+                                        src={generateTraits(selectedAvatar).image}
+                                        alt={`Riftwalker #${selectedAvatar}`}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    <span className="absolute bottom-1 right-1 text-xs font-orbitron font-bold text-white/80 bg-black/50 px-1.5 py-0.5 rounded">
                                         #{selectedAvatar}
                                     </span>
-                                </div>
+                                </>
                             ) : (
                                 <User size={40} className="text-gray-500 group-hover:text-primary transition-colors" />
                             )}

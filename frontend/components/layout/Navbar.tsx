@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { MobileConnectButton } from '@/components/shared/MobileConnectButton';
+import { AvatarConnectButton } from '@/components/shared/AvatarConnectButton';
 import { Container } from './Container';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -61,11 +61,7 @@ export function Navbar() {
 
                     {/* Actions */}
                     <div className="hidden md:flex items-center space-x-4">
-                        <ConnectButton
-                            accountStatus="address"
-                            chainStatus="icon"
-                            showBalance={false}
-                        />
+                        <AvatarConnectButton />
                     </div>
 
                     {/* Mobile Menu Button */}
