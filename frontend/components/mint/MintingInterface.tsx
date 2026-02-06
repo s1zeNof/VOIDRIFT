@@ -4,10 +4,10 @@ import { useState, useRef } from 'react';
 import { Container } from '@/components/layout/Container';
 import { motion } from 'framer-motion';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi';
 import { parseEther } from 'viem';
-import { Minus, Plus, Loader2 } from 'lucide-react';
-import { VOIDRIFT_NFT_ADDRESS, VOIDRIFT_NFT_ABI } from '@/lib/contracts';
+import { Minus, Plus, Loader2, AlertTriangle } from 'lucide-react';
+import { VOIDRIFT_NFT_ADDRESS, VOIDRIFT_NFT_ABI, SUPPORTED_CHAIN_ID } from '@/lib/contracts';
 import { MintPreview } from './MintPreview';
 import { toast } from 'sonner';
 
@@ -15,14 +15,19 @@ import { toast } from 'sonner';
 
 export function MintingInterface() {
     const { address, isConnected } = useAccount();
+    const chainId = useChainId();
+    const { switchChain } = useSwitchChain();
     const [quantity, setQuantity] = useState(1);
     const [isMinting, setIsMinting] = useState(false);
 
-    // Contract Reads
+    const isWrongChain = isConnected && chainId !== SUPPORTED_CHAIN_ID;
+
+    // Contract Reads - always read from Sepolia regardless of connected chain
     const { data: totalSupply } = useReadContract({
         address: VOIDRIFT_NFT_ADDRESS,
         abi: VOIDRIFT_NFT_ABI,
         functionName: 'totalSupply',
+        chainId: SUPPORTED_CHAIN_ID,
         query: { refetchInterval: 5000 }
     });
 
@@ -30,16 +35,22 @@ export function MintingInterface() {
         address: VOIDRIFT_NFT_ADDRESS,
         abi: VOIDRIFT_NFT_ABI,
         functionName: 'maxSupply',
+        chainId: SUPPORTED_CHAIN_ID,
     });
 
     const { data: mintPrice } = useReadContract({
         address: VOIDRIFT_NFT_ADDRESS,
         abi: VOIDRIFT_NFT_ABI,
         functionName: 'mintPrice',
+        chainId: SUPPORTED_CHAIN_ID,
     });
 
     // Contract Writes
     const { writeContractAsync } = useWriteContract();
+
+    const handleSwitchChain = () => {
+        switchChain({ chainId: SUPPORTED_CHAIN_ID });
+    };
 
     const handleMint = async () => {
         if (!isConnected) {
@@ -47,9 +58,15 @@ export function MintingInterface() {
             return;
         }
 
+        if (isWrongChain) {
+            toast.error('Please switch to Sepolia network first');
+            handleSwitchChain();
+            return;
+        }
+
         setIsMinting(true);
         try {
-            const price = mintPrice ? mintPrice : parseEther('0.01');
+            const price = mintPrice ? mintPrice : parseEther('0.001');
             const totalCost = price * BigInt(quantity);
 
             const hash = quantity === 1
@@ -58,6 +75,7 @@ export function MintingInterface() {
                     abi: VOIDRIFT_NFT_ABI,
                     functionName: 'mint',
                     value: totalCost,
+                    chainId: SUPPORTED_CHAIN_ID,
                 })
                 : await writeContractAsync({
                     address: VOIDRIFT_NFT_ADDRESS,
@@ -65,11 +83,11 @@ export function MintingInterface() {
                     functionName: 'mintBatch',
                     args: [BigInt(quantity)],
                     value: totalCost,
+                    chainId: SUPPORTED_CHAIN_ID,
                 });
 
             toast.info('Transaction submitted. Waiting for confirmation...');
 
-            // In a real app we'd wait for receipt, but simpler here
             toast.success(`Successfully minted ${quantity} Riftwalker(s)! hash: ${hash}`);
             console.log('Mint hash:', hash);
 
@@ -83,15 +101,35 @@ export function MintingInterface() {
 
     const currentSupply = totalSupply ? Number(totalSupply) : 0;
     const max = maxSupply ? Number(maxSupply) : 222;
-    const priceEth = mintPrice ? Number(mintPrice) / 1e18 : 0.01;
+    const priceEth = mintPrice ? Number(mintPrice) / 1e18 : 0.001;
 
     const percentage = (currentSupply / max) * 100;
     const totalPrice = (priceEth * quantity).toFixed(3);
 
     return (
         <section className="py-20 flex-1 flex flex-col justify-center relative overflow-hidden">
-            {/* Background elements could go here */}
             <Container>
+                {/* Wrong chain warning */}
+                {isWrongChain && (
+                    <div className="mb-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <AlertTriangle className="text-yellow-400 flex-shrink-0" size={20} />
+                            <div>
+                                <p className="text-yellow-200 font-bold text-sm">Wrong Network</p>
+                                <p className="text-yellow-200/70 text-xs">
+                                    VOIDRIFT is on Sepolia testnet. Switch network to mint.
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleSwitchChain}
+                            className="px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-200 text-sm font-bold hover:bg-yellow-500/30 transition-colors cursor-pointer whitespace-nowrap"
+                        >
+                            Switch to Sepolia
+                        </button>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     {/* Left: Bird Preview */}
                     <motion.div
@@ -144,8 +182,10 @@ export function MintingInterface() {
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-gray-400 font-rajdhani">Status</span>
                                 <div className="flex items-center space-x-2">
-                                    <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                                    <span className="text-white text-sm">{isConnected ? 'Connected' : 'Disconnected'}</span>
+                                    <div className={`w-2 h-2 rounded-full ${isConnected && !isWrongChain ? 'bg-green-500' : isConnected ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                                    <span className="text-white text-sm">
+                                        {!isConnected ? 'Disconnected' : isWrongChain ? 'Wrong Network' : 'Connected'}
+                                    </span>
                                 </div>
                             </div>
                             <ConnectButton showBalance={true} />
@@ -184,12 +224,12 @@ export function MintingInterface() {
                             </div>
 
                             <button
-                                onClick={handleMint}
+                                onClick={isWrongChain ? handleSwitchChain : handleMint}
                                 disabled={!isConnected}
-                                className="w-full py-4 bg-gradient-to-r from-primary to-secondary rounded-lg font-orbitron font-bold text-black text-xl 
+                                className="w-full py-4 bg-gradient-to-r from-primary to-secondary rounded-lg font-orbitron font-bold text-black text-xl
                          hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(0,255,255,0.3)] cursor-pointer"
                             >
-                                {!isConnected ? 'Connect Wallet' : 'MINT NOW'}
+                                {!isConnected ? 'Connect Wallet' : isWrongChain ? 'SWITCH TO SEPOLIA' : 'MINT NOW'}
                             </button>
                         </div>
 

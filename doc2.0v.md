@@ -1,4 +1,4 @@
-# VOIDRIFT - Project Documentation v2.1
+# VOIDRIFT - Project Documentation v2.2
 
 ## What is VOIDRIFT?
 
@@ -17,7 +17,7 @@
 
 ---
 
-## Current Status (v2.1)
+## Current Status (v2.2)
 
 ### Deployed Contracts
 
@@ -336,7 +336,18 @@ VOIDRIFT/
 
 ## Changelog
 
-### v2.1 (Current)
+### v2.2 (Current)
+- ✅ **Fixed Live Mint Feed** — was showing "Failed to load mint feed" because it scanned from block 0 (millions of blocks, exceeds RPC limits). Now limits scan to last ~50k blocks (~7 days)
+- ✅ **Fixed NFT image mismatch** — /mint and /profile pages now fetch real IPFS metadata instead of hardcoded local traits. Token #1 = Sparrow (not Owl), matching on-chain metadata
+- ✅ **Fixed wallet NFT visibility** — Added `tokenURI`, `ownerOf`, `name`, `symbol`, `supportsInterface` to ABI so Rabby and other wallets can discover NFT metadata via ERC721 standard
+- ✅ **Fixed Base chain issues** — All contract reads now specify `chainId: SUPPORTED_CHAIN_ID` (Sepolia). Switching to Base no longer causes NaN ETH, infinite loading, or 0/222 supply
+- ✅ **Wrong chain detection** — Added "Wrong Network" warning banners on /mint and /profile with "Switch to Sepolia" button
+- ✅ **IPFS metadata integration** — MintPreview, LiveMintFeed, and Profile page all fetch real metadata from Pinata IPFS gateway instead of using broken local trait generation
+- ✅ **Block range limiting** — All event log queries (Live Feed, Leaderboard, Profile) now limit block range to prevent RPC timeouts
+- ✅ **Mint button context** — Shows "SWITCH TO SEPOLIA" when on wrong network, "MINT NOW" when correct
+- ✅ **Fallback client** — Live mint feed always reads from Sepolia even when wallet is on another chain
+
+### v2.1
 - ✅ IPFS metadata fully configured
 - ✅ setBaseURI called on Sepolia contract
 - ✅ NFT avatar in profile & navbar
@@ -359,5 +370,25 @@ VOIDRIFT/
 
 ---
 
-*Last updated: February 2025*
-*Version: 2.1*
+## Known Issues & Notes
+
+### Current Chain: Ethereum Sepolia (Testnet)
+- Contract address: `0x2f848cC764C77b8EFEBd23cd69ECB2F66A53D52f`
+- **Base is NOT supported yet** — contract not deployed on Base Sepolia
+- Frontend always reads from Sepolia regardless of connected wallet chain
+- To mint, wallet MUST be on Sepolia network
+
+### Rabby Wallet NFT Visibility
+- NFTs should now appear in Rabby after mint (ABI includes `tokenURI`, `name`, `symbol`, `supportsInterface`)
+- If still not showing: Rabby may need to be manually pointed to Sepolia testnet, and may require a page refresh
+- NFT metadata (image, name, rarity) comes from IPFS: `ipfs://bafybeigg4sbo4jw7noyc24obyck26z7244uxw6qc2h76bp4454mtvarwcm/{tokenId}.json`
+
+### NFT Metadata Source
+- On-chain: Contract stores baseURI pointing to IPFS metadata
+- Frontend: Fetches from Pinata gateway `https://gateway.pinata.cloud/ipfs/...`
+- Each token has unique species/rarity (randomly generated), NOT all the same species
+
+---
+
+*Last updated: February 2026*
+*Version: 2.2*
