@@ -1,10 +1,14 @@
-import { sepolia } from 'viem/chains';
+import { baseSepolia } from 'viem/chains';
 
-// Supported chain - contract is ONLY on Sepolia for now
-export const SUPPORTED_CHAIN_ID = sepolia.id; // 11155111
+// Supported chain - Base Sepolia (L2 testnet)
+export const SUPPORTED_CHAIN_ID = baseSepolia.id; // 84532
 
-// RiftbirdNFT (MVP) - deployed to Sepolia
-export const RIFTBIRD_NFT_ADDRESS = '0x2f848cC764C77b8EFEBd23cd69ECB2F66A53D52f';
+// Block explorer base URL
+export const EXPLORER_BASE_URL = 'https://sepolia.basescan.org';
+
+// RiftbirdNFT (MVP) - deployed to Base Sepolia
+// TODO: Replace with actual address after deploying with: node scripts/deploy-base-sepolia.js
+export const RIFTBIRD_NFT_ADDRESS = '0x0000000000000000000000000000000000000000'; // <-- PASTE BASE SEPOLIA ADDRESS HERE
 
 // Legacy contracts (VoidriftNFT full suite)
 export const VOIDRIFT_NFT_ADDRESS = RIFTBIRD_NFT_ADDRESS; // alias for compatibility

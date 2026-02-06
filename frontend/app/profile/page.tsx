@@ -11,15 +11,15 @@ import { toast } from 'sonner';
 import { NFTDetailModal } from '@/components/collection/NFTDetailModal';
 import { generateTraits } from '@/lib/nftUtils';
 import { parseAbiItem, formatEther, createPublicClient, http } from 'viem';
-import { sepolia } from 'viem/chains';
+import { baseSepolia } from 'viem/chains';
 import { FlockStats } from '@/components/profile/FlockStats';
 import { ShareCard } from '@/components/profile/ShareCard';
 import { RarityBadge } from '@/components/shared/RarityBadge';
 
-// Fallback client to always read from Sepolia
-const sepoliaClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
+// Fallback client - always reads from Base Sepolia
+const baseSepoliaClient = createPublicClient({
+    chain: baseSepolia,
+    transport: http('https://sepolia.base.org'),
 });
 
 // Cache for fetched IPFS metadata
@@ -68,7 +68,7 @@ export default function ProfilePage() {
 
     const wagmiClient = usePublicClient();
     // Always use Sepolia client for reading NFT data
-    const publicClient = chainId === SUPPORTED_CHAIN_ID ? wagmiClient : sepoliaClient;
+    const publicClient = chainId === SUPPORTED_CHAIN_ID ? wagmiClient : baseSepoliaClient;
 
     const isWrongChain = chainId !== SUPPORTED_CHAIN_ID;
 
@@ -109,7 +109,7 @@ export default function ProfilePage() {
 
         async function fetchTokenIds() {
             setIsLoadingIds(true);
-            const client = sepoliaClient;
+            const client = baseSepoliaClient;
             try {
                 // Get current block to limit range
                 const currentBlock = await client.getBlockNumber();
@@ -230,7 +230,7 @@ export default function ProfilePage() {
                         <div>
                             <p className="text-yellow-200 font-bold text-sm">Wrong Network</p>
                             <p className="text-yellow-200/70 text-xs">
-                                VOIDRIFT NFTs are on Sepolia testnet. Please switch to Sepolia in your wallet. Your NFTs are still shown below from Sepolia.
+                                VOIDRIFT NFTs are on Base Sepolia. Please switch to Base Sepolia in your wallet. Your NFTs are still shown below.
                             </p>
                         </div>
                     </div>

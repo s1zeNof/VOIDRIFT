@@ -146,9 +146,9 @@ export function LeaderboardRow({ entry, index }: LeaderboardRowProps) {
                 </div>
             </div>
 
-            {/* Etherscan Link */}
+            {/* BaseScan Link */}
             <a
-                href={`https://sepolia.etherscan.io/address/${entry.address}`}
+                href={`https://sepolia.basescan.org/address/${entry.address}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-gray-400 hover:text-primary transition-colors"

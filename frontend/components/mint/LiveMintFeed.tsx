@@ -150,9 +150,9 @@ function MintEventCard({ mint, index }: { mint: MintEvent; index: number }) {
                 </div>
             </div>
 
-            {/* Etherscan Link */}
+            {/* BaseScan Link */}
             <a
-                href={`https://sepolia.etherscan.io/tx/${mint.txHash}`}
+                href={`https://sepolia.basescan.org/tx/${mint.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-gray-500 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"

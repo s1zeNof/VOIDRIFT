@@ -3,14 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { usePublicClient, useChainId } from 'wagmi';
 import { createPublicClient, http, parseAbiItem } from 'viem';
-import { sepolia } from 'viem/chains';
+import { baseSepolia } from 'viem/chains';
 import { VOIDRIFT_NFT_ADDRESS } from '@/lib/contracts';
 import { calculateRarityScore } from '@/lib/nftUtils';
 
-// Fallback client for when wallet is not connected
+// Fallback client - always reads from Base Sepolia
 const fallbackClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
+    chain: baseSepolia,
+    transport: http('https://sepolia.base.org'),
 });
 
 export interface LeaderboardEntry {

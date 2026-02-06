@@ -22,7 +22,7 @@ export function MintingInterface() {
 
     const isWrongChain = isConnected && chainId !== SUPPORTED_CHAIN_ID;
 
-    // Contract Reads - always read from Sepolia regardless of connected chain
+    // Contract Reads - always read from Base Sepolia regardless of connected chain
     const { data: totalSupply } = useReadContract({
         address: VOIDRIFT_NFT_ADDRESS,
         abi: VOIDRIFT_NFT_ABI,
@@ -59,7 +59,7 @@ export function MintingInterface() {
         }
 
         if (isWrongChain) {
-            toast.error('Please switch to Sepolia network first');
+            toast.error('Please switch to Base Sepolia network first');
             handleSwitchChain();
             return;
         }
@@ -117,7 +117,7 @@ export function MintingInterface() {
                             <div>
                                 <p className="text-yellow-200 font-bold text-sm">Wrong Network</p>
                                 <p className="text-yellow-200/70 text-xs">
-                                    VOIDRIFT is on Sepolia testnet. Switch network to mint.
+                                    VOIDRIFT is on Base Sepolia. Switch network to mint.
                                 </p>
                             </div>
                         </div>
@@ -125,7 +125,7 @@ export function MintingInterface() {
                             onClick={handleSwitchChain}
                             className="px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-200 text-sm font-bold hover:bg-yellow-500/30 transition-colors cursor-pointer whitespace-nowrap"
                         >
-                            Switch to Sepolia
+                            Switch to Base Sepolia
                         </button>
                     </div>
                 )}
@@ -229,7 +229,7 @@ export function MintingInterface() {
                                 className="w-full py-4 bg-gradient-to-r from-primary to-secondary rounded-lg font-orbitron font-bold text-black text-xl
                          hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(0,255,255,0.3)] cursor-pointer"
                             >
-                                {!isConnected ? 'Connect Wallet' : isWrongChain ? 'SWITCH TO SEPOLIA' : 'MINT NOW'}
+                                {!isConnected ? 'Connect Wallet' : isWrongChain ? 'SWITCH TO BASE SEPOLIA' : 'MINT NOW'}
                             </button>
                         </div>
 
