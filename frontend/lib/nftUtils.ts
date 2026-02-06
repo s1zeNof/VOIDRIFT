@@ -1,32 +1,24 @@
 /**
  * RIFTBIRDS - NFT Utilities
  *
- * Architecture designed for easy scaling:
- * 1. All NFT config in one place (COLLECTION_CONFIG)
- * 2. Add new birds by adding to AVAILABLE_NFTS array
- * 3. Token ID = array index + 1
+ * IMPORTANT: This logic MUST match scripts/generate_metadata.js
+ * Both use the same seeded random to generate consistent traits
  */
 
 // =============================================================================
-// CONFIGURATION - Edit this section to add/modify NFTs
+// CONFIGURATION
 // =============================================================================
-
-export interface NFTConfig {
-    id: number;
-    species: string;
-    rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary' | 'Mythic';
-    variant: number;
-    enabled: boolean; // Toggle NFTs on/off without deleting
-}
 
 export const COLLECTION_CONFIG = {
     name: 'Riftbirds',
     symbol: 'RIFT',
     description: 'Mystical voxel birds from the Rift dimension',
+    maxSupply: 222,
 
     // Rarity colors for UI
     rarityColors: {
         Common: '#9ca3af',     // gray
+        Uncommon: '#22c55e',   // green
         Rare: '#3b82f6',       // blue
         Epic: '#a855f7',       // purple
         Legendary: '#eab308',  // yellow
@@ -36,6 +28,7 @@ export const COLLECTION_CONFIG = {
     // Staking multipliers per rarity
     stakingMultipliers: {
         Common: 1,
+        Uncommon: 1.25,
         Rare: 1.5,
         Epic: 2,
         Legendary: 3,
@@ -43,47 +36,36 @@ export const COLLECTION_CONFIG = {
     }
 };
 
-/**
- * AVAILABLE NFTs - Add new birds here
- *
- * To add a new bird:
- * 1. Add image to /public/birds/ as {species}_{variant}.png
- * 2. Add entry here with enabled: true
- * 3. Token ID will be the array index + 1
- *
- * For MVP: Only owl_1 is enabled
- */
-export const AVAILABLE_NFTS: NFTConfig[] = [
-    // ===== MVP: Only this one is active =====
-    { id: 1, species: 'Owl', rarity: 'Legendary', variant: 1, enabled: true },
+// Species and their images (same as IPFS)
+const SPECIES_IMAGES: Record<string, string[]> = {
+    raven: ['raven_1.png', 'raven_2.png'],
+    owl: ['owl_1.png', 'owl_2.png'],
+    falcon: ['falcon_1.png', 'falcon_2.png'],
+    sparrow: ['sparrow_1.png', 'sparrow_2.png']
+};
 
-    // ===== Future birds (disabled for now) =====
-    { id: 2, species: 'Owl', rarity: 'Legendary', variant: 2, enabled: false },
-    { id: 3, species: 'Falcon', rarity: 'Epic', variant: 1, enabled: false },
-    { id: 4, species: 'Falcon', rarity: 'Epic', variant: 2, enabled: false },
-    { id: 5, species: 'Sparrow', rarity: 'Common', variant: 1, enabled: false },
-    { id: 6, species: 'Sparrow', rarity: 'Common', variant: 2, enabled: false },
-    { id: 7, species: 'Raven', rarity: 'Rare', variant: 1, enabled: false },
-    { id: 8, species: 'Raven', rarity: 'Rare', variant: 2, enabled: false },
-];
+const SPECIES = Object.keys(SPECIES_IMAGES);
+
+const TRAITS = {
+    Background: ["Void Nebula", "Cosmic Storm", "Dark Matter", "Quantum Field", "Stellar Rift"],
+    Energy: ["Weak", "Stable", "Volatile", "Critical", "Cosmic"],
+    Origin: ["Earth", "Mars", "Kepler-186f", "The Void", "Unknown"],
+    Class: ["Scout", "Warrior", "Guardian", "Technomancer", "Architect"],
+    Anomaly: ["None", "None", "None", "Glitch", "Time Warp"]
+};
 
 // =============================================================================
-// COMPUTED VALUES - Don't edit below unless adding features
+// SEEDED RANDOM - MUST MATCH generate_metadata.js
 // =============================================================================
 
-// Get only enabled NFTs
-export const getEnabledNFTs = () => AVAILABLE_NFTS.filter(nft => nft.enabled);
+function seededRandom(seed: number): number {
+    const x = Math.sin(seed * 9999) * 10000;
+    return x - Math.floor(x);
+}
 
-// Get max supply (only enabled NFTs)
-export const getMaxSupply = () => getEnabledNFTs().length;
-
-// Get NFT by ID
-export const getNFTById = (id: number): NFTConfig | undefined =>
-    AVAILABLE_NFTS.find(nft => nft.id === id);
-
-// Get enabled NFT by ID
-export const getEnabledNFTById = (id: number): NFTConfig | undefined =>
-    getEnabledNFTs().find(nft => nft.id === id);
+function pickSeeded<T>(array: T[], seed: number): T {
+    return array[Math.floor(seededRandom(seed) * array.length)];
+}
 
 // =============================================================================
 // INTERFACES
@@ -93,7 +75,7 @@ export interface NFTAttributes {
     attributes: {
         trait_type: string;
         value: string;
-        percent: number;
+        percent?: number;
     }[];
     image: string;
     video: string;
@@ -104,87 +86,61 @@ export interface NFTAttributes {
 }
 
 // =============================================================================
-// TRAIT GENERATION
+// TRAIT GENERATION - MUST MATCH generate_metadata.js
 // =============================================================================
 
 /**
  * Generate traits for a specific NFT by ID
+ * This uses the SAME logic as scripts/generate_metadata.js
  */
 export function generateTraits(id: string): NFTAttributes {
-    const numId = parseInt(id) || 1;
-    const nft = getNFTById(numId);
+    const i = parseInt(id) || 1;
 
-    // Default to first enabled NFT if not found
-    const activeNft = nft || getEnabledNFTs()[0];
+    // Deterministic species based on token ID (same as generate_metadata.js)
+    const speciesIndex = Math.floor(seededRandom(i * 1.5) * SPECIES.length);
+    const species = SPECIES[speciesIndex];
 
-    if (!activeNft) {
-        throw new Error('No NFTs configured!');
-    }
+    // Deterministic image variant (1 or 2)
+    const imageVariant = Math.floor(seededRandom(i * 2.5) * 2);
+    const imageName = SPECIES_IMAGES[species][imageVariant];
 
-    const imagePath = `/birds/${activeNft.species.toLowerCase()}_${activeNft.variant}.png`;
-    const videoPath = `/birds/${activeNft.species.toLowerCase()}_${activeNft.variant}.mp4`;
+    // Deterministic rarity (same thresholds as generate_metadata.js)
+    const rarityRoll = seededRandom(i * 3.7);
+    let rarity = "Common";
+    if (rarityRoll > 0.98) rarity = "Legendary";
+    else if (rarityRoll > 0.90) rarity = "Epic";
+    else if (rarityRoll > 0.75) rarity = "Rare";
+    else if (rarityRoll > 0.50) rarity = "Uncommon";
+
+    // Species display name
+    const speciesName = species.charAt(0).toUpperCase() + species.slice(1);
+
+    // Image path (local for frontend display)
+    const imagePath = `/birds/${imageName}`;
 
     return {
         attributes: [
-            { trait_type: "Species", value: activeNft.species, percent: 100 },
-            { trait_type: "Rarity", value: activeNft.rarity, percent: 100 },
-            { trait_type: "Variant", value: `Type ${activeNft.variant}`, percent: 50 },
-            { trait_type: "Generation", value: "Genesis", percent: 100 },
+            { trait_type: "Species", value: speciesName },
+            { trait_type: "Rarity", value: rarity },
+            { trait_type: "Stage", value: "Dormant" },
+            { trait_type: "Background", value: pickSeeded(TRAITS.Background, i * 4.1) },
+            { trait_type: "Energy", value: pickSeeded(TRAITS.Energy, i * 5.3) },
+            { trait_type: "Origin", value: pickSeeded(TRAITS.Origin, i * 6.7) },
+            { trait_type: "Class", value: pickSeeded(TRAITS.Class, i * 7.9) },
+            { trait_type: "Anomaly", value: pickSeeded(TRAITS.Anomaly, i * 8.2) },
         ],
         image: imagePath,
-        video: videoPath,
-        rarity: activeNft.rarity,
-        name: `${activeNft.species} #${activeNft.id}`,
-        species: activeNft.species,
+        video: '', // No video for now
+        rarity: rarity,
+        name: `Riftwalker #${i}`,
+        species: speciesName,
         colorTheme: "Void"
     };
-}
-
-/**
- * Generate traits from seed (for randomized minting in future)
- * Currently returns the only enabled NFT
- */
-export function generateTraitsFromSeed(id: string, seed: number): NFTAttributes {
-    const enabledNfts = getEnabledNFTs();
-
-    if (enabledNfts.length === 0) {
-        throw new Error('No NFTs enabled!');
-    }
-
-    // For MVP: Always return the single enabled NFT
-    if (enabledNfts.length === 1) {
-        return generateTraits(String(enabledNfts[0].id));
-    }
-
-    // For future: Random selection from enabled NFTs
-    const selectedIndex = seed % enabledNfts.length;
-    const selectedNft = enabledNfts[selectedIndex];
-
-    return generateTraits(String(selectedNft.id));
-}
-
-/**
- * Generate preview seed for client-side preview
- */
-export function generatePreviewSeed(tokenId: number, userAddress?: string): number {
-    // For MVP with 1 NFT, seed doesn't matter
-    return 0;
 }
 
 // =============================================================================
 // HELPERS FOR UI COMPONENTS
 // =============================================================================
-
-/**
- * Get all species for collection showcase
- * Only returns enabled NFTs
- */
-export const ALL_SPECIES_PREVIEW = getEnabledNFTs().map(nft => ({
-    id: String(nft.id),
-    name: `${nft.species} (${nft.rarity})`,
-    species: nft.species,
-    rarity: nft.rarity,
-}));
 
 /**
  * Get rarity color for UI
@@ -204,10 +160,11 @@ export function getStakingMultiplier(rarity: string): number {
 // RARITY SYSTEM
 // =============================================================================
 
-export const RARITY_ORDER = ['Common', 'Rare', 'Epic', 'Legendary', 'Mythic'] as const;
+export const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'] as const;
 
 export const RARITY_SCORES: Record<string, number> = {
     Common: 10,
+    Uncommon: 15,
     Rare: 25,
     Epic: 50,
     Legendary: 100,
@@ -219,9 +176,8 @@ export const RARITY_SCORES: Record<string, number> = {
  */
 export function calculateRarityScore(tokenIds: string[]): number {
     return tokenIds.reduce((total, id) => {
-        const nft = getNFTById(Number(id));
-        if (!nft) return total;
-        return total + (RARITY_SCORES[nft.rarity] || 0);
+        const traits = generateTraits(id);
+        return total + (RARITY_SCORES[traits.rarity] || 0);
     }, 0);
 }
 
@@ -232,10 +188,8 @@ export function getRarityBreakdown(tokenIds: string[]): Record<string, number> {
     const breakdown: Record<string, number> = {};
 
     tokenIds.forEach(id => {
-        const nft = getNFTById(Number(id));
-        if (nft) {
-            breakdown[nft.rarity] = (breakdown[nft.rarity] || 0) + 1;
-        }
+        const traits = generateTraits(id);
+        breakdown[traits.rarity] = (breakdown[traits.rarity] || 0) + 1;
     });
 
     return breakdown;
@@ -275,10 +229,10 @@ export function calculateCollectionStats(tokenIds: string[]): {
  */
 export function sortByRarity(tokenIds: string[], descending = true): string[] {
     return [...tokenIds].sort((a, b) => {
-        const nftA = getNFTById(Number(a));
-        const nftB = getNFTById(Number(b));
-        const scoreA = nftA ? (RARITY_SCORES[nftA.rarity] || 0) : 0;
-        const scoreB = nftB ? (RARITY_SCORES[nftB.rarity] || 0) : 0;
+        const traitsA = generateTraits(a);
+        const traitsB = generateTraits(b);
+        const scoreA = RARITY_SCORES[traitsA.rarity] || 0;
+        const scoreB = RARITY_SCORES[traitsB.rarity] || 0;
         return descending ? scoreB - scoreA : scoreA - scoreB;
     });
 }
@@ -289,7 +243,11 @@ export function sortByRarity(tokenIds: string[], descending = true): string[] {
 export function filterByRarity(tokenIds: string[], rarities: string[]): string[] {
     if (rarities.length === 0) return tokenIds;
     return tokenIds.filter(id => {
-        const nft = getNFTById(Number(id));
-        return nft && rarities.includes(nft.rarity);
+        const traits = generateTraits(id);
+        return rarities.includes(traits.rarity);
     });
 }
+
+// Legacy exports for compatibility
+export const getMaxSupply = () => COLLECTION_CONFIG.maxSupply;
+export const getNFTById = (id: number) => generateTraits(String(id));

@@ -5,20 +5,22 @@ import { Container } from '@/components/layout/Container';
 import { ParticleBackground } from '@/components/animations/ParticleBackground';
 import { CollectionGallery } from '@/components/collection/CollectionGallery';
 import { RarityFilter } from '@/components/collection/RarityFilter';
-import { ALL_SPECIES_PREVIEW, RARITY_ORDER, getRarityBreakdown } from '@/lib/nftUtils';
+import { RARITY_ORDER, generateTraits, getMaxSupply } from '@/lib/nftUtils';
 
 export default function CollectionPage() {
     const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
 
-    // Calculate rarity counts
+    // Calculate rarity counts from all possible NFTs
     const rarityCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         RARITY_ORDER.forEach(r => counts[r] = 0);
-        ALL_SPECIES_PREVIEW.forEach(nft => {
-            if (nft.rarity) {
-                counts[nft.rarity] = (counts[nft.rarity] || 0) + 1;
+        const maxSupply = getMaxSupply();
+        for (let i = 1; i <= maxSupply; i++) {
+            const traits = generateTraits(String(i));
+            if (traits.rarity) {
+                counts[traits.rarity] = (counts[traits.rarity] || 0) + 1;
             }
-        });
+        }
         return counts;
     }, []);
 

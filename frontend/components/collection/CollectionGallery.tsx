@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ALL_SPECIES_PREVIEW, generateTraits, getRarityColor } from '@/lib/nftUtils';
+import { generateTraits, getRarityColor, getMaxSupply } from '@/lib/nftUtils';
 import { NFTDetailModal } from './NFTDetailModal';
 import { RarityBadge } from '@/components/shared/RarityBadge';
 
@@ -10,16 +10,35 @@ interface CollectionGalleryProps {
     selectedRarities?: string[];
 }
 
+// Generate preview items for all possible NFTs
+function generateAllPreviews() {
+    const maxSupply = getMaxSupply();
+    const previews = [];
+    for (let i = 1; i <= maxSupply; i++) {
+        const traits = generateTraits(String(i));
+        previews.push({
+            id: String(i),
+            rarity: traits.rarity,
+            species: traits.species,
+            image: traits.image
+        });
+    }
+    return previews;
+}
+
 export function CollectionGallery({ selectedRarities = [] }: CollectionGalleryProps) {
     // Track hover state for video playback
     const [hoveredId, setHoveredId] = useState<string | null>(null);
     const [selectedNFT, setSelectedNFT] = useState<any>(null);
 
+    // Generate all preview items
+    const allPreviews = useMemo(() => generateAllPreviews(), []);
+
     // Filter items by rarity
     const filteredItems = useMemo(() => {
-        if (selectedRarities.length === 0) return ALL_SPECIES_PREVIEW;
-        return ALL_SPECIES_PREVIEW.filter(item => selectedRarities.includes(item.rarity));
-    }, [selectedRarities]);
+        if (selectedRarities.length === 0) return allPreviews;
+        return allPreviews.filter(item => selectedRarities.includes(item.rarity));
+    }, [selectedRarities, allPreviews]);
 
     if (filteredItems.length === 0) {
         return (
