@@ -1,11 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// INSTRUCTION: Replace this with the CID from Pinata after user provides it
-// For now, we use a placeholder to demonstrate the data structure
-const IMAGE_CID = "bafybeihub7hq6eskxpu237nepcxt2pfi3u53nr7dhwafjnj3iunm6y4cai";
+// CID from uploaded images
+const IMAGE_CID = "bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm";
 
-const OUTPUT_DIR = path.join(__dirname, '../assets/json');
+const OUTPUT_DIR = path.join(__dirname, '../assets/metadata');
 
 if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -17,41 +16,80 @@ if (!fs.existsSync(OUTPUT_DIR)) {
     }
 }
 
-console.log(`Generating 222 metadata files in ${OUTPUT_DIR}...`);
+console.log(`Generating metadata files in ${OUTPUT_DIR}...`);
+
+// Available images (matching what we uploaded)
+const SPECIES_IMAGES = {
+    raven: ['raven_1.png', 'raven_2.png'],
+    owl: ['owl_1.png', 'owl_2.png'],
+    falcon: ['falcon_1.png', 'falcon_2.png'],
+    sparrow: ['sparrow_1.png', 'sparrow_2.png']
+};
+
+const SPECIES = Object.keys(SPECIES_IMAGES);
 
 const TRAITS = {
+    "Background": ["Void Nebula", "Cosmic Storm", "Dark Matter", "Quantum Field", "Stellar Rift"],
     "Energy": ["Weak", "Stable", "Volatile", "Critical", "Cosmic"],
     "Origin": ["Earth", "Mars", "Kepler-186f", "The Void", "Unknown"],
     "Class": ["Scout", "Warrior", "Guardian", "Technomancer", "Architect"],
-    "Anomaly": ["None", "None", "None", "Glitch", "Time Warp"] // "None" is more common
+    "Anomaly": ["None", "None", "None", "Glitch", "Time Warp"]
 };
 
-function pickRandom(array) {
-    return array[Math.floor(Math.random() * array.length)];
+// Deterministic random based on token ID (same as frontend)
+function seededRandom(seed) {
+    const x = Math.sin(seed * 9999) * 10000;
+    return x - Math.floor(x);
 }
 
-for (let i = 1; i <= 222; i++) {
-    const rarityRank = Math.random();
+function pickSeeded(array, seed) {
+    return array[Math.floor(seededRandom(seed) * array.length)];
+}
+
+// Generate for 222 NFTs
+const MAX_SUPPLY = 222;
+
+for (let i = 1; i <= MAX_SUPPLY; i++) {
+    // Deterministic species based on token ID
+    const speciesIndex = Math.floor(seededRandom(i * 1.5) * SPECIES.length);
+    const species = SPECIES[speciesIndex];
+
+    // Deterministic image variant (1 or 2)
+    const imageVariant = Math.floor(seededRandom(i * 2.5) * 2);
+    const imageName = SPECIES_IMAGES[species][imageVariant];
+
+    // Deterministic rarity
+    const rarityRoll = seededRandom(i * 3.7);
     let rarity = "Common";
-    if (rarityRank > 0.98) rarity = "Legendary";
-    else if (rarityRank > 0.85) rarity = "Epic";
-    else if (rarityRank > 0.60) rarity = "Rare";
+    if (rarityRoll > 0.98) rarity = "Legendary";
+    else if (rarityRoll > 0.90) rarity = "Epic";
+    else if (rarityRoll > 0.75) rarity = "Rare";
+    else if (rarityRoll > 0.50) rarity = "Uncommon";
+
+    // Species display name
+    const speciesName = species.charAt(0).toUpperCase() + species.slice(1);
 
     const metadata = {
         name: `Riftwalker #${i}`,
-        description: `A dormant Rift waiting to evolve. Current Stage: VOID (1/6).`,
-        image: `ipfs://${IMAGE_CID}/${i}.svg`, // Points to the image we just uploaded
+        description: `A mysterious ${speciesName} from the VOIDRIFT dimension. This ${rarity.toLowerCase()} bird carries the essence of the cosmic rift.`,
+        image: `ipfs://${IMAGE_CID}/${imageName}`,
+        external_url: `https://voidrift.vercel.app/collection?id=${i}`,
         attributes: [
-            { trait_type: "Stage", value: "Void" },
+            { trait_type: "Species", value: speciesName },
             { trait_type: "Rarity", value: rarity },
-            { trait_type: "Energy", value: pickRandom(TRAITS.Energy) },
-            { trait_type: "Origin", value: pickRandom(TRAITS.Origin) },
-            { trait_type: "Class", value: pickRandom(TRAITS.Class) },
+            { trait_type: "Stage", value: "Dormant" },
+            { trait_type: "Background", value: pickSeeded(TRAITS.Background, i * 4.1) },
+            { trait_type: "Energy", value: pickSeeded(TRAITS.Energy, i * 5.3) },
+            { trait_type: "Origin", value: pickSeeded(TRAITS.Origin, i * 6.7) },
+            { trait_type: "Class", value: pickSeeded(TRAITS.Class, i * 7.9) },
+            { trait_type: "Anomaly", value: pickSeeded(TRAITS.Anomaly, i * 8.2) },
             { trait_type: "Evolution Day", value: 0, display_type: "number" }
         ]
     };
 
+    // Contract appends .json to tokenId, so save as 1.json, 2.json, etc.
     fs.writeFileSync(path.join(OUTPUT_DIR, `${i}.json`), JSON.stringify(metadata, null, 2));
 }
 
-console.log('Done! Metadata generated with random traits.');
+console.log(`✅ Generated ${MAX_SUPPLY} metadata files!`);
+console.log(`\nNext step: node upload-metadata.js`);

@@ -1,0 +1,15 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "1. Перейди на https://app.pinata.cloud/\r 2. Створи акаунт\r 3. Перейди в API Keys → New Key\r 4. Створи ключ з правами \"pinFileToIPFS\" та \"pinJSONToIPFS\"\r 5. Збережи API Key та Secret Key",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "viem": "^2.45.1"
+  }
+}

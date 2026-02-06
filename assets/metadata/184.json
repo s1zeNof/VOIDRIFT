@@ -1,0 +1,45 @@
+{
+  "name": "Riftwalker #184",
+  "description": "A mysterious Raven from the VOIDRIFT dimension. This common bird carries the essence of the cosmic rift.",
+  "image": "ipfs://bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/raven_2.png",
+  "external_url": "https://voidrift.vercel.app/collection?id=184",
+  "attributes": [
+    {
+      "trait_type": "Species",
+      "value": "Raven"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Stage",
+      "value": "Dormant"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Void Nebula"
+    },
+    {
+      "trait_type": "Energy",
+      "value": "Stable"
+    },
+    {
+      "trait_type": "Origin",
+      "value": "Earth"
+    },
+    {
+      "trait_type": "Class",
+      "value": "Guardian"
+    },
+    {
+      "trait_type": "Anomaly",
+      "value": "Glitch"
+    },
+    {
+      "trait_type": "Evolution Day",
+      "value": 0,
+      "display_type": "number"
+    }
+  ]
+}

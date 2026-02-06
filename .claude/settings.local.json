@@ -27,7 +27,9 @@
       "Bash(git merge:*)",
       "Bash(git restore:*)",
       "Bash(npm install:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(node:*)",
+      "Bash(npm init:*)"
     ]
   }
 }

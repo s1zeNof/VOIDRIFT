@@ -1,0 +1,45 @@
+{
+  "name": "Riftwalker #11",
+  "description": "A mysterious Falcon from the VOIDRIFT dimension. This common bird carries the essence of the cosmic rift.",
+  "image": "ipfs://bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/falcon_1.png",
+  "external_url": "https://voidrift.vercel.app/collection?id=11",
+  "attributes": [
+    {
+      "trait_type": "Species",
+      "value": "Falcon"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Stage",
+      "value": "Dormant"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Quantum Field"
+    },
+    {
+      "trait_type": "Energy",
+      "value": "Weak"
+    },
+    {
+      "trait_type": "Origin",
+      "value": "Earth"
+    },
+    {
+      "trait_type": "Class",
+      "value": "Scout"
+    },
+    {
+      "trait_type": "Anomaly",
+      "value": "Time Warp"
+    },
+    {
+      "trait_type": "Evolution Day",
+      "value": 0,
+      "display_type": "number"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "Riftwalker #12",
+  "description": "A mysterious Owl from the VOIDRIFT dimension. This common bird carries the essence of the cosmic rift.",
+  "image": "ipfs://bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/owl_2.png",
+  "external_url": "https://voidrift.vercel.app/collection?id=12",
+  "attributes": [
+    {
+      "trait_type": "Species",
+      "value": "Owl"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Stage",
+      "value": "Dormant"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Cosmic Storm"
+    },
+    {
+      "trait_type": "Energy",
+      "value": "Cosmic"
+    },
+    {
+      "trait_type": "Origin",
+      "value": "Kepler-186f"
+    },
+    {
+      "trait_type": "Class",
+      "value": "Warrior"
+    },
+    {
+      "trait_type": "Anomaly",
+      "value": "None"
+    },
+    {
+      "trait_type": "Evolution Day",
+      "value": 0,
+      "display_type": "number"
+    }
+  ]
+}

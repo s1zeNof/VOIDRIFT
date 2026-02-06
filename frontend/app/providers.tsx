@@ -8,17 +8,18 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
-import { sepolia, baseSepolia } from 'wagmi/chains';
+import { sepolia } from 'wagmi/chains';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
 const projectId = '3c5d2dfdaa004c4fbaa896baf9ae60b7';
 
 // Use getDefaultConfig for simplicity - it handles wallets automatically
+// Only Sepolia for now - contract is deployed there
 const config = getDefaultConfig({
     appName: 'VOIDRIFT',
     projectId,
-    chains: [sepolia, baseSepolia],
+    chains: [sepolia],
     ssr: true,
 });
 

@@ -24,7 +24,8 @@ async function uploadMetadata() {
     console.log('RIFTBIRDS - Metadata Upload to IPFS');
     console.log('='.repeat(50));
 
-    const files = fs.readdirSync(METADATA_PATH).filter(f => f.endsWith('.json'));
+    // Files are named 1.json, 2.json, etc. (contract appends .json)
+    const files = fs.readdirSync(METADATA_PATH).filter(f => /^\d+\.json$/.test(f));
 
     if (files.length === 0) {
         console.error('No metadata files found in', METADATA_PATH);

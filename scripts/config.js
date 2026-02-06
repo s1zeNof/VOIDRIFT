@@ -34,7 +34,7 @@ module.exports = {
     paths: {
         root: path.join(__dirname, '..'),
         assets: path.join(__dirname, '../assets'),
-        images: path.join(__dirname, '../assets/images'),
+        images: path.join(__dirname, '../frontend/public/birds'),
         metadata: path.join(__dirname, '../assets/metadata'),
         source: path.join(__dirname, '../assets/source'),
         contracts: path.join(__dirname, '../contracts')

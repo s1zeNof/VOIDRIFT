@@ -1,8 +1,8 @@
-# VOIDRIFT - Project Documentation v2.0
+# VOIDRIFT - Project Documentation v2.1
 
 ## What is VOIDRIFT?
 
-**VOIDRIFT** is a **Web3 DApp (Decentralized Application)** - an NFT collection platform built on Ethereum (Sepolia testnet). It combines:
+**VOIDRIFT** is a **Web3 DApp (Decentralized Application)** - an NFT collection platform built on Base blockchain. It combines:
 - **NFT Minting** - users can mint unique digital collectibles
 - **Staking System** (planned) - stake NFTs to earn $RIFT tokens
 - **Gamification** - rarity system, leaderboards, achievements
@@ -10,9 +10,31 @@
 ### Tech Stack
 - **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, Framer Motion
 - **Web3**: RainbowKit, Wagmi v3, Viem
-- **Blockchain**: Ethereum Sepolia (testnet), Base Sepolia
+- **Blockchain**: Base (L2) - testnet now, mainnet for production
 - **Smart Contracts**: Solidity (ERC-721 for NFTs)
+- **Metadata Storage**: IPFS via Pinata
 - **Deployment**: Vercel
+
+---
+
+## Current Status (v2.1)
+
+### Deployed Contracts
+
+| Network | Contract | Address |
+|---------|----------|---------|
+| Sepolia (ETH testnet) | RiftbirdNFT | `0x2f848cC764C77b8EFEBd23cd69ECB2F66A53D52f` |
+| Base Sepolia | RiftbirdNFT | **PENDING** (deploy script ready) |
+| Base Mainnet | RiftbirdNFT | **PLANNED** |
+
+### IPFS Metadata
+
+| Type | CID | Gateway URL |
+|------|-----|-------------|
+| Images | `bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm` | [View](https://gateway.pinata.cloud/ipfs/bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/) |
+| Metadata | `bafybeigg4sbo4jw7noyc24obyck26z7244uxw6qc2h76bp4454mtvarwcm` | [View](https://gateway.pinata.cloud/ipfs/bafybeigg4sbo4jw7noyc24obyck26z7244uxw6qc2h76bp4454mtvarwcm/) |
+
+**Base URI for contract:** `ipfs://bafybeigg4sbo4jw7noyc24obyck26z7244uxw6qc2h76bp4454mtvarwcm/`
 
 ---
 
@@ -37,183 +59,186 @@ VOIDRIFT is a cosmic-themed NFT collection featuring mysterious birds from the v
 
 ## Current Features (Implemented)
 
-### 1. NFT Minting
+### 1. NFT Minting ✅
 - Connect wallet via RainbowKit
-- Mint NFTs on Sepolia testnet
+- Mint NFTs (0.001 ETH on testnet)
 - View minting interface with price and supply info
 - Live mint feed showing recent mints
+- Max supply: 222 NFTs
 
-### 2. Collection Gallery
+### 2. Collection Gallery ✅
 - Browse all minted NFTs
 - Filter by rarity (Legendary, Epic, Rare, Uncommon, Common)
 - Rarity badges with visual indicators
 - Responsive grid layout
+- 4 bird species: Raven, Owl, Falcon, Sparrow
 
-### 3. Leaderboard System
+### 3. Leaderboard System ✅
 - Top collectors ranking
 - Display wallet addresses and NFT counts
 - Real-time data from blockchain
 - Animated table with rankings
 
-### 4. Profile Dashboard ("Your Flock")
+### 4. Profile Dashboard ("Your Flock") ✅
 - View owned NFTs
+- **NFT image as avatar** (new!)
 - Stats: total NFTs, portfolio value, rarest bird
 - Rarity breakdown chart
 - Share card for social media
 
-### 5. Staking Preview UI
+### 5. Staking Preview UI ✅
 - Rewards projection calculator
 - $RIFT token teaser
 - APY display (placeholder)
 - Lock period options
 
-### 6. Whitelist System
-- Check whitelist status
-- Whitelist-only minting phase support
+### 6. NFT Metadata on IPFS ✅
+- All images uploaded to IPFS
+- All metadata JSON uploaded to IPFS
+- Contract baseURI set correctly
+- OpenSea compatible format
 
-### 7. UI/UX
+### 7. UI/UX ✅
 - Dark sci-fi theme (cyan + purple accents)
 - Responsive design (mobile + desktop)
 - Smooth animations (Framer Motion)
 - Custom fonts (Orbitron, Rajdhani)
+- **Avatar in navbar** with NFT image (new!)
 
 ---
 
 ## Not Yet Implemented / In Progress
 
-### 1. Mobile Wallet Connection
+### 1. Mobile Wallet Connection ⏳
 - **Issue**: RainbowKit wallet buttons not responding on mobile
-- **Status**: CSS fixes applied, needs further debugging
-- **Solution needed**: Test WalletConnect deep links on Android/iOS
+- **Status**: CSS fixes applied, MobileConnectButton created
+- **Solution needed**: Further testing with WalletConnect
 
-### 2. Smart Contract Deployment
-- Current: Using placeholder/test contract
-- Needed: Deploy production NFT contract with:
-  - Whitelist merkle tree
-  - Reveal mechanism
-  - Royalties (ERC-2981)
+### 2. Base Sepolia Deployment ⏳
+- Deploy script ready: `scripts/deploy-base-sepolia.js`
+- Waiting for Base Sepolia ETH
+- Faucet: https://www.coinbase.com/faucets/base-ethereum-sepolia-faucet
 
-### 3. Staking Contract
+### 3. Staking Contract 📋
 - UI is ready (preview)
 - Smart contract not deployed
 - $RIFT token contract needed
 
-### 4. NFT Metadata & Images
-- Need actual bird artwork
-- IPFS/Arweave storage for metadata
-- Reveal mechanism (pre-reveal placeholder)
+### 4. Production (Base Mainnet) 📋
+- After Base Sepolia testing
+- Need real ETH on Base (~$5-10)
+- OpenSea listing
 
-### 5. NFT as Profile Avatar
-- Currently: Only NFT ID shown
-- Wanted: Display actual NFT image as avatar
+---
+
+## Deployment Plan
+
+### Phase 1: Base Sepolia Testing (Current)
+1. ✅ IPFS metadata uploaded
+2. ✅ Deploy scripts ready
+3. ⏳ Get Base Sepolia ETH from faucet
+4. ⏳ Deploy contract to Base Sepolia
+5. ⏳ Update frontend to use Base Sepolia
+6. ⏳ Test all functionality
+
+### Phase 2: Base Mainnet Launch
+1. 📋 Get ETH on Base mainnet
+2. 📋 Deploy contract to Base Mainnet
+3. 📋 Update frontend for mainnet
+4. 📋 List on OpenSea
+5. 📋 Launch marketing (Twitter/X)
+
+---
+
+## NFT Collection Details
+
+### Species (4 types)
+| Species | Images | Variants |
+|---------|--------|----------|
+| Raven | raven_1.png, raven_2.png | 2 |
+| Owl | owl_1.png, owl_2.png | 2 |
+| Falcon | falcon_1.png, falcon_2.png | 2 |
+| Sparrow | sparrow_1.png, sparrow_2.png | 2 |
+
+### Rarity Distribution
+| Rarity | Probability | Color |
+|--------|-------------|-------|
+| Common | 50% | Gray |
+| Uncommon | 25% | Green |
+| Rare | 15% | Blue |
+| Epic | 8% | Purple |
+| Legendary | 2% | Gold |
+
+### Traits (Attributes)
+- **Species**: Raven, Owl, Falcon, Sparrow
+- **Rarity**: Common → Legendary
+- **Stage**: Dormant (evolves with staking)
+- **Background**: Void Nebula, Cosmic Storm, Dark Matter, Quantum Field, Stellar Rift
+- **Energy**: Weak, Stable, Volatile, Critical, Cosmic
+- **Origin**: Earth, Mars, Kepler-186f, The Void, Unknown
+- **Class**: Scout, Warrior, Guardian, Technomancer, Architect
+- **Anomaly**: None, Glitch, Time Warp
+
+---
+
+## Smart Contract Details
+
+### RiftbirdNFT.sol
+```solidity
+// ERC-721 with URIStorage
+Contract: RiftbirdNFT
+
+Functions:
+- mint() - mint 1 NFT (payable)
+- mintBatch(quantity) - mint multiple (payable)
+- ownerMint(to) - free mint for owner
+- setBaseURI(uri) - update metadata location
+- tokenURI(tokenId) - get metadata URL
+- totalSupply() - get minted count
+- withdraw() - withdraw funds to owner
+
+Parameters:
+- maxSupply: 222
+- mintPrice: 0.001 ETH (testnet) / TBD (mainnet)
+- baseURI: ipfs://bafybeigg4sbo4jw7noyc24obyck26z7244uxw6qc2h76bp4454mtvarwcm/
+```
+
+---
+
+## Scripts Available
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/upload-images.js` | Upload bird images to IPFS |
+| `scripts/generate_metadata.js` | Generate NFT metadata JSON |
+| `scripts/upload-metadata.js` | Upload metadata to IPFS |
+| `scripts/set-base-uri.js` | Set baseURI on Sepolia contract |
+| `scripts/deploy-base-sepolia.js` | Deploy contract to Base Sepolia |
 
 ---
 
 ## Future Ideas & Roadmap
 
-### Phase 1: Core Launch
-- [ ] Deploy mainnet NFT contract
-- [ ] Upload artwork to IPFS
-- [ ] Implement reveal mechanism
-- [ ] Fix mobile wallet issues
-- [ ] NFT image as avatar
-
-### Phase 2: Staking & Tokens
+### Phase 3: Staking & Tokens
 - [ ] Deploy $RIFT token contract (ERC-20)
 - [ ] Deploy staking contract
 - [ ] Implement claim rewards
 - [ ] Staking tiers based on rarity
 
-### Phase 3: Crafting System (NEW IDEA)
+### Phase 4: Crafting System
 - [ ] Burn multiple NFTs to craft higher rarity
-- [ ] Crafting recipes (e.g., 3 Common = 1 Uncommon)
+- [ ] Crafting recipes (3 Common = 1 Uncommon, etc.)
 - [ ] Special "Fusion" NFTs with unique traits
-- [ ] Crafting history on profile
 
-### Phase 4: Gamification
+### Phase 5: Gamification
 - [ ] Achievements system
 - [ ] Daily check-in rewards
 - [ ] Seasonal events
-- [ ] Trading system (p2p)
 
-### Phase 5: Community
+### Phase 6: Community
 - [ ] DAO governance with $RIFT
 - [ ] Proposal voting
 - [ ] Community treasury
-- [ ] Collaborations with other projects
-
----
-
-## NFT Collection Design Ideas
-
-### Current State
-- 1 NFT type (Void Bird)
-- 5 rarity levels (Common → Legendary)
-- Basic traits
-
-### Expansion Ideas
-
-#### Option A: Multiple Bird Species
-- **Void Raven** - Common base
-- **Rift Phoenix** - Rare fire variant
-- **Nebula Owl** - Epic cosmic variant
-- **Quantum Falcon** - Legendary speed variant
-- **Singularity Eagle** - Mythic (craft only)
-
-#### Option B: Evolution System
-- Birds can "evolve" by staking for long periods
-- Visual changes at evolution milestones
-- New traits unlocked
-
-#### Option C: Crafting/Fusion System
-```
-Crafting Recipes:
-3x Common → 1x Uncommon
-3x Uncommon → 1x Rare
-3x Rare → 1x Epic
-3x Epic → 1x Legendary
-5x Legendary → 1x MYTHIC (unique)
-```
-
-**How it works with OpenSea:**
-1. User selects NFTs to craft in our DApp
-2. Smart contract BURNS the input NFTs (they disappear from OpenSea)
-3. Contract MINTS new higher-rarity NFT to user
-4. New NFT appears on OpenSea with new metadata
-5. Burned NFTs show as "burned" in transaction history
-
-**Benefits:**
-- Deflationary mechanism (reduces supply)
-- Increases value of remaining NFTs
-- Engagement loop (collect → craft → collect more)
-- Rare NFTs become actually rare
-
----
-
-## Smart Contract Architecture
-
-### NFT Contract (ERC-721)
-```solidity
-- mint() - public minting
-- whitelistMint() - WL minting with merkle proof
-- craft() - burn multiple, mint one higher rarity
-- reveal() - reveal metadata
-- setBaseURI() - update metadata location
-```
-
-### Staking Contract
-```solidity
-- stake(tokenId) - lock NFT
-- unstake(tokenId) - unlock NFT
-- claimRewards() - claim $RIFT
-- getRewards(address) - view pending rewards
-```
-
-### $RIFT Token (ERC-20)
-```solidity
-- Minted by staking contract
-- Used for: crafting fees, governance, future utilities
-```
 
 ---
 
@@ -229,43 +254,50 @@ Crafting Recipes:
 - **Headings**: Orbitron (futuristic)
 - **Body**: Rajdhani / Inter
 
-### Components
-- Glowing borders
-- Gradient buttons
-- Glassmorphism cards
-- Particle effects (planned)
-
 ---
 
 ## File Structure
 ```
-frontend/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx (home)
-│   ├── mint/page.tsx
-│   ├── collection/page.tsx
-│   ├── leaderboard/page.tsx
-│   ├── profile/page.tsx
-│   ├── staking/page.tsx
-│   └── whitelist/page.tsx
-├── components/
-│   ├── layout/ (Navbar, Container, Footer)
-│   ├── mint/ (MintingInterface, LiveMintFeed)
-│   ├── collection/ (NFTCard, RarityFilter)
-│   ├── leaderboard/ (LeaderboardTable, LeaderboardRow)
-│   ├── profile/ (FlockStats, ShareCard)
-│   ├── staking/ (RewardsProjection, RiftTokenTeaser)
-│   └── shared/ (RarityBadge, MobileConnectButton)
-├── hooks/
-│   ├── useNFTData.ts
-│   ├── useLeaderboard.ts
-│   └── useLiveMints.ts
-├── lib/
-│   ├── utils.ts
-│   ├── nftUtils.ts
-│   └── constants.ts
-└── contracts/ (ABIs)
+VOIDRIFT/
+├── frontend/
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx (home)
+│   │   ├── mint/page.tsx
+│   │   ├── collection/page.tsx
+│   │   ├── leaderboard/page.tsx
+│   │   ├── profile/page.tsx
+│   │   ├── staking/page.tsx
+│   │   └── providers.tsx
+│   ├── components/
+│   │   ├── layout/ (Navbar, Container)
+│   │   ├── mint/ (MintingInterface, LiveMintFeed)
+│   │   ├── collection/ (NFTCard, RarityFilter)
+│   │   ├── leaderboard/ (LeaderboardTable)
+│   │   ├── profile/ (FlockStats, ShareCard)
+│   │   ├── staking/ (RewardsProjection, RiftTokenTeaser)
+│   │   └── shared/ (RarityBadge, AvatarConnectButton, MobileConnectButton)
+│   ├── hooks/
+│   │   ├── useLeaderboard.ts
+│   │   └── useLiveMints.ts
+│   ├── lib/
+│   │   ├── contracts.ts (addresses, ABIs)
+│   │   ├── nftUtils.ts (rarity, traits)
+│   │   └── utils.ts
+│   └── public/birds/ (images)
+├── contracts/
+│   ├── contracts/
+│   │   ├── RiftbirdNFT.sol
+│   │   └── ...
+│   └── .env (keys)
+├── scripts/
+│   ├── upload-images.js
+│   ├── generate_metadata.js
+│   ├── upload-metadata.js
+│   ├── set-base-uri.js
+│   └── deploy-base-sepolia.js
+├── assets/metadata/ (generated JSON)
+└── doc2.0v.md (this file)
 ```
 
 ---
@@ -274,37 +306,58 @@ frontend/
 
 - **Live Site**: https://voidrift.vercel.app
 - **GitHub**: https://github.com/s1zeNof/VOIDRIFT
-- **Contract** (Sepolia): [TO BE DEPLOYED]
-- **OpenSea** (testnet): [TO BE ADDED]
+- **Contract (Sepolia)**: https://sepolia.etherscan.io/address/0x2f848cC764C77b8EFEBd23cd69ECB2F66A53D52f
+- **IPFS Images**: https://gateway.pinata.cloud/ipfs/bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/
+- **IPFS Metadata**: https://gateway.pinata.cloud/ipfs/bafybeigg4sbo4jw7noyc24obyck26z7244uxw6qc2h76bp4454mtvarwcm/
 
 ---
 
-## Notes & Decisions
+## Why Base?
 
-### Why Sepolia?
-- Free testnet ETH from faucets
-- Good for development and testing
-- Will migrate to mainnet (Ethereum or Base) for production
+| Feature | Ethereum | Base |
+|---------|----------|------|
+| Gas fees | $5-50+ | $0.01-0.10 |
+| Speed | ~15 sec | ~2 sec |
+| Security | Native | ETH L2 |
+| OpenSea | ✅ | ✅ |
+| Ecosystem | Largest | Growing fast |
 
-### Why RainbowKit?
-- Best UX for wallet connection
-- Supports many wallets
-- Easy to customize
-
-### Why Base (as option)?
-- Low gas fees
-- Ethereum security (L2)
-- Growing NFT ecosystem
-- Coinbase backing
+**Decision**: Use Base for production - cheaper, faster, same security.
 
 ---
 
 ## Contact
 - Project Owner: [Your Name]
+- Email: [TO BE CREATED - voidrift.nft@gmail.com recommended]
 - Discord: [TO BE ADDED]
-- Twitter: [TO BE ADDED]
+- Twitter/X: [TO BE ADDED]
 
 ---
 
-*Last updated: 2024*
-*Version: 2.0*
+## Changelog
+
+### v2.1 (Current)
+- ✅ IPFS metadata fully configured
+- ✅ setBaseURI called on Sepolia contract
+- ✅ NFT avatar in profile & navbar
+- ✅ AvatarConnectButton component
+- ✅ Base Sepolia deploy script ready
+- ✅ Removed Base Sepolia from frontend (until contract deployed)
+- ✅ Documentation updated
+
+### v2.0
+- ✅ Leaderboard system
+- ✅ Rarity filter
+- ✅ Profile stats (FlockStats, ShareCard)
+- ✅ Staking preview UI
+- ✅ Live mint feed
+
+### v1.0
+- ✅ Basic minting
+- ✅ Collection gallery
+- ✅ Wallet connection
+
+---
+
+*Last updated: February 2025*
+*Version: 2.1*

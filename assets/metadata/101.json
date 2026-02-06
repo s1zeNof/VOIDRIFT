@@ -1,0 +1,45 @@
+{
+  "name": "Riftwalker #101",
+  "description": "A mysterious Sparrow from the VOIDRIFT dimension. This rare bird carries the essence of the cosmic rift.",
+  "image": "ipfs://bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/sparrow_2.png",
+  "external_url": "https://voidrift.vercel.app/collection?id=101",
+  "attributes": [
+    {
+      "trait_type": "Species",
+      "value": "Sparrow"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    },
+    {
+      "trait_type": "Stage",
+      "value": "Dormant"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Stellar Rift"
+    },
+    {
+      "trait_type": "Energy",
+      "value": "Volatile"
+    },
+    {
+      "trait_type": "Origin",
+      "value": "The Void"
+    },
+    {
+      "trait_type": "Class",
+      "value": "Architect"
+    },
+    {
+      "trait_type": "Anomaly",
+      "value": "None"
+    },
+    {
+      "trait_type": "Evolution Day",
+      "value": 0,
+      "display_type": "number"
+    }
+  ]
+}

@@ -1,34 +1,45 @@
 {
-  "name": "Riftbird #1",
-  "description": "A mystical voxel owl from the Rift dimension. This wise creature holds ancient knowledge of the void.",
-  "image": "ipfs://bafybeifx6zfb2wpyqealdhxaxxsl4o3a3rgrxvbk6pgd24zbt3kgdxxepa/1.png",
-  "external_url": "https://riftbirds.xyz/bird/1",
+  "name": "Riftwalker #1",
+  "description": "A mysterious Sparrow from the VOIDRIFT dimension. This uncommon bird carries the essence of the cosmic rift.",
+  "image": "ipfs://bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/sparrow_2.png",
+  "external_url": "https://voidrift.vercel.app/collection?id=1",
   "attributes": [
     {
       "trait_type": "Species",
-      "value": "Owl"
+      "value": "Sparrow"
     },
     {
       "trait_type": "Rarity",
-      "value": "Legendary"
-    },
-    {
-      "trait_type": "Element",
-      "value": "Void"
+      "value": "Uncommon"
     },
     {
       "trait_type": "Stage",
-      "value": "Hatchling"
+      "value": "Dormant"
     },
     {
-      "display_type": "number",
-      "trait_type": "Generation",
-      "value": 1
+      "trait_type": "Background",
+      "value": "Stellar Rift"
     },
     {
-      "display_type": "boost_percentage",
-      "trait_type": "Wisdom",
-      "value": 25
+      "trait_type": "Energy",
+      "value": "Volatile"
+    },
+    {
+      "trait_type": "Origin",
+      "value": "Mars"
+    },
+    {
+      "trait_type": "Class",
+      "value": "Scout"
+    },
+    {
+      "trait_type": "Anomaly",
+      "value": "None"
+    },
+    {
+      "trait_type": "Evolution Day",
+      "value": 0,
+      "display_type": "number"
     }
   ]
 }
