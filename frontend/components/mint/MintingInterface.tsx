@@ -99,9 +99,12 @@ export function MintingInterface() {
         }
     };
 
-    const currentSupply = totalSupply ? Number(totalSupply) : 0;
-    const max = maxSupply ? Number(maxSupply) : 222;
-    const priceEth = mintPrice ? Number(mintPrice) / 1e18 : 0.001;
+    // Check if contract is deployed (address is not zero)
+    const isContractDeployed = VOIDRIFT_NFT_ADDRESS !== '0x0000000000000000000000000000000000000000';
+
+    const currentSupply = totalSupply !== undefined ? Number(totalSupply) : 0;
+    const max = maxSupply !== undefined ? Number(maxSupply) : 10000; // Default to 10k collection
+    const priceEth = mintPrice !== undefined ? Number(mintPrice) / 1e18 : 0; // Free mint on testnet
 
     const percentage = (currentSupply / max) * 100;
     const totalPrice = (priceEth * quantity).toFixed(3);
@@ -148,7 +151,17 @@ export function MintingInterface() {
                                 </p>
                             </div>
 
-                            {totalSupply !== undefined ? (
+                            {!isContractDeployed ? (
+                                <div className="flex flex-col items-center justify-center h-[400px] text-center">
+                                    <div className="w-20 h-20 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl flex items-center justify-center mb-4">
+                                        <AlertTriangle className="text-yellow-400" size={32} />
+                                    </div>
+                                    <h4 className="text-white font-orbitron font-bold mb-2">Contract Pending</h4>
+                                    <p className="text-gray-400 text-sm max-w-xs">
+                                        NFT contract deployment to Base Sepolia is in progress. Check back soon!
+                                    </p>
+                                </div>
+                            ) : totalSupply !== undefined ? (
                                 <MintPreview
                                     startId={currentSupply + 1}
                                     quantity={quantity}
@@ -188,7 +201,7 @@ export function MintingInterface() {
                                     </span>
                                 </div>
                             </div>
-                            <ConnectButton showBalance={true} />
+                            <ConnectButton showBalance={!isWrongChain} />
                         </div>
 
                         {/* Controls */}

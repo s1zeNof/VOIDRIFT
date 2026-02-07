@@ -390,5 +390,150 @@ VOIDRIFT/
 
 ---
 
+---
+
+## Collection Concept & Mint Logic (for OpenSea)
+
+### Collection Overview
+
+**VOIDRIFT Riftbirds** is a generative NFT collection featuring cosmic voxel birds from interdimensional rifts. The collection evolves through multiple phases:
+
+### Phase 1: 3D Voxel Birds (Current Stage 1)
+- **Format**: 3D rendered voxel bird models
+- **Style**: Space/cosmic theme with glowing effects
+- **Total Supply**: 10,000 NFTs
+- **Species**: Multiple bird species from the void dimension
+- **Traits**: Species, Rarity, Class, Background, Energy, Origin, Anomaly
+
+### Phase 2: 2D Pixel Art Birds (Future)
+- **Format**: 2D pixel art bird characters
+- **Style**: Retro pixel art with modern effects
+- **Integration**: Holders of Stage 1 NFTs can "evolve" to Stage 2
+
+### Phase 3: Pixel Art Feathers
+- **Format**: 2D pixel art feathers (both static and animated)
+- **Style**: Collectible feathers from Riftbirds
+- **Utility**: Used for crafting, staking boosts, or merging
+
+### Mint Logic
+
+```
+Flow: User connects wallet → Preview NFT → Mint → NFT appears in wallet
+
+1. User visits /mint page
+2. Frontend fetches totalSupply from contract
+3. Shows preview of next available token ID (from IPFS metadata)
+4. User selects quantity (1-10)
+5. User clicks "MINT NOW"
+6. Transaction sent to contract mint() or mintBatch()
+7. Contract mints sequential token IDs to user
+8. NFT appears in wallet with full metadata from IPFS
+```
+
+### OpenSea Listing Strategy
+
+**Collection Name**: VOIDRIFT Riftbirds
+**Symbol**: RIFT
+
+**Description for OpenSea**:
+```
+🌌 VOIDRIFT RIFTBIRDS 🐦
+
+Interdimensional voxel birds from the cosmic void. Each Riftbird is a unique generative NFT featuring:
+
+• 4 Base Species: Raven, Owl, Falcon, Sparrow
+• 5 Rarity Tiers: Common, Uncommon, Rare, Epic, Legendary
+• Multiple Classes: Scout, Warrior, Guardian, Technomancer, Architect
+• Unique Backgrounds, Energy levels, and Origins
+
+🎮 UTILITY:
+- Stake to earn $RIFT tokens
+- Evolution system (Stage 1 → Stage 2 → Stage 3)
+- Future pixel art collection integration
+- Community governance
+
+🚀 ROADMAP:
+- Phase 1: Genesis Launch (3D Voxel Birds) ✅
+- Phase 2: Staking & $RIFT Token
+- Phase 3: 2D Pixel Art Evolution
+- Phase 4: Feather Collection & Crafting
+
+Built on Base for ultra-low gas fees.
+```
+
+### Metadata Format (ERC-721 Standard)
+
+```json
+{
+  "name": "Riftwalker #1",
+  "description": "A cosmic Sparrow from the void dimension. Rarity: Rare",
+  "image": "ipfs://bafybeiaaeiktyp6ewvrvw6rsl2jdio7kcnkwn6mvl2k56armwnm3civynm/sparrow_1.png",
+  "attributes": [
+    { "trait_type": "Species", "value": "Sparrow" },
+    { "trait_type": "Rarity", "value": "Rare" },
+    { "trait_type": "Stage", "value": "1" },
+    { "trait_type": "Background", "value": "Void Nebula" },
+    { "trait_type": "Energy", "value": "Volatile" },
+    { "trait_type": "Origin", "value": "The Void" },
+    { "trait_type": "Class", "value": "Scout" },
+    { "trait_type": "Anomaly", "value": "None" }
+  ]
+}
+```
+
+### Future Collection Additions
+
+1. **2D Pixel Art Birds** - Separate collection or evolution mechanic
+2. **2D/3D Pixel Art Feathers** - Crafting materials, stake boosters
+3. **Animated versions** - Video NFTs for special editions
+
+---
+
+## Wallet Connection (25+ Wallets)
+
+### Supported Wallets
+
+**Recommended:**
+- MetaMask
+- Coinbase Wallet
+- WalletConnect (QR code for mobile)
+- Rainbow
+
+**Auto-Detected (Browser Extensions):**
+- Rabby Wallet
+- Brave Wallet
+- Phantom
+- Frame
+
+**Mobile Wallets:**
+- Trust Wallet
+- Zerion
+- OKX Wallet
+- imToken
+- Omni
+- TokenPocket
+- Bitget Wallet
+- Bybit Wallet
+
+**Hardware & Security:**
+- Ledger
+- Safe (Gnosis Safe)
+- Argent
+
+**More Options:**
+- Uniswap Wallet
+- Taho
+- XDEFI
+- Enkrypt
+
+### Mobile Connection
+
+WalletConnect v2 provides:
+- QR code scanning from mobile wallet apps
+- Deep linking on mobile browsers
+- Universal link support
+
+---
+
 *Last updated: February 2026*
-*Version: 2.2*
+*Version: 2.3*
