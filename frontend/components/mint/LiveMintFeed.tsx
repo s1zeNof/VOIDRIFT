@@ -1,10 +1,49 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Radio, ExternalLink, Loader2 } from 'lucide-react';
 import { useLiveMints, shortenAddress, formatTimeAgo, MintEvent } from '@/hooks/useLiveMints';
 import { RarityBadge } from '@/components/shared/RarityBadge';
-import { generateTraits } from '@/lib/nftUtils';
+import { getTokenMetadataUrl, ipfsToHttp } from '@/lib/contracts';
+
+interface MintDisplayData {
+    name: string;
+    species: string;
+    rarity: string;
+    image: string;
+}
+
+// Cache IPFS metadata lookups
+const mintDisplayCache = new Map<string, MintDisplayData>();
+
+async function fetchMintDisplay(tokenId: string): Promise<MintDisplayData> {
+    if (mintDisplayCache.has(tokenId)) return mintDisplayCache.get(tokenId)!;
+
+    const fallback: MintDisplayData = {
+        name: `Riftwalker #${tokenId}`,
+        species: 'Unknown',
+        rarity: 'Common',
+        image: '/birds/owl_1.png',
+    };
+
+    try {
+        const url = getTokenMetadataUrl(tokenId);
+        const res = await fetch(url);
+        if (!res.ok) return fallback;
+        const data = await res.json();
+        const display: MintDisplayData = {
+            name: data.name || fallback.name,
+            species: data.attributes?.find((a: { trait_type: string }) => a.trait_type === 'Species')?.value || 'Unknown',
+            rarity: data.attributes?.find((a: { trait_type: string }) => a.trait_type === 'Rarity')?.value || 'Common',
+            image: ipfsToHttp(data.image),
+        };
+        mintDisplayCache.set(tokenId, display);
+        return display;
+    } catch {
+        return fallback;
+    }
+}
 
 export function LiveMintFeed() {
     const { recentMints, isLoading, isLive, error } = useLiveMints();
@@ -65,7 +104,15 @@ export function LiveMintFeed() {
 }
 
 function MintEventCard({ mint, index }: { mint: MintEvent; index: number }) {
-    const traits = generateTraits(mint.tokenId);
+    const [display, setDisplay] = useState<MintDisplayData | null>(null);
+
+    useEffect(() => {
+        fetchMintDisplay(mint.tokenId).then(setDisplay);
+    }, [mint.tokenId]);
+
+    const species = display?.species || '...';
+    const rarity = display?.rarity || mint.rarity || 'Common';
+    const image = display?.image || '/birds/owl_1.png';
 
     return (
         <motion.div
@@ -78,8 +125,8 @@ function MintEventCard({ mint, index }: { mint: MintEvent; index: number }) {
             {/* NFT Preview */}
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/50 border border-white/10 flex-shrink-0">
                 <img
-                    src={traits.image}
-                    alt={traits.name}
+                    src={image}
+                    alt={`#${mint.tokenId}`}
                     className="w-full h-full object-cover"
                 />
             </div>
@@ -92,20 +139,20 @@ function MintEventCard({ mint, index }: { mint: MintEvent; index: number }) {
                     </span>
                     <span className="text-gray-500 text-sm">minted</span>
                     <span className="text-primary font-orbitron font-bold">
-                        {traits.species} #{mint.tokenId}
+                        {species} #{mint.tokenId}
                     </span>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                    <RarityBadge rarity={mint.rarity || traits.rarity} size="sm" showGlow={false} />
+                    <RarityBadge rarity={rarity} size="sm" showGlow={false} />
                     <span className="text-xs text-gray-500">
                         {formatTimeAgo(mint.timestamp)}
                     </span>
                 </div>
             </div>
 
-            {/* Etherscan Link */}
+            {/* BaseScan Link */}
             <a
-                href={`https://sepolia.etherscan.io/tx/${mint.txHash}`}
+                href={`https://sepolia.basescan.org/tx/${mint.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-gray-500 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
@@ -136,30 +183,38 @@ export function LiveMintFeedCompact() {
 
             {/* Scrolling feed */}
             <div className="flex gap-4 overflow-x-auto pb-2 pl-20 scrollbar-none">
-                {recentMints.slice(0, 10).map((mint) => {
-                    const traits = generateTraits(mint.tokenId);
-                    return (
-                        <motion.div
-                            key={`${mint.txHash}-${mint.tokenId}`}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg border border-white/10"
-                        >
-                            <div className="w-8 h-8 rounded overflow-hidden">
-                                <img src={traits.image} alt="" className="w-full h-full object-cover" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-white font-mono">
-                                    {shortenAddress(mint.address, 3)}
-                                </p>
-                                <p className="text-[10px] text-gray-400">
-                                    #{mint.tokenId}
-                                </p>
-                            </div>
-                        </motion.div>
-                    );
-                })}
+                {recentMints.slice(0, 10).map((mint) => (
+                    <CompactMintCard key={`${mint.txHash}-${mint.tokenId}`} mint={mint} />
+                ))}
             </div>
         </div>
+    );
+}
+
+function CompactMintCard({ mint }: { mint: MintEvent }) {
+    const [display, setDisplay] = useState<MintDisplayData | null>(null);
+
+    useEffect(() => {
+        fetchMintDisplay(mint.tokenId).then(setDisplay);
+    }, [mint.tokenId]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg border border-white/10"
+        >
+            <div className="w-8 h-8 rounded overflow-hidden">
+                <img src={display?.image || '/birds/owl_1.png'} alt="" className="w-full h-full object-cover" />
+            </div>
+            <div>
+                <p className="text-xs text-white font-mono">
+                    {shortenAddress(mint.address, 3)}
+                </p>
+                <p className="text-[10px] text-gray-400">
+                    #{mint.tokenId}
+                </p>
+            </div>
+        </motion.div>
     );
 }

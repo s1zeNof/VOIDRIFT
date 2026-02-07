@@ -48,14 +48,14 @@ export function Footer() {
                     <p>© 2026 VOIDRIFT. All rights reserved.</p>
                     <div className="flex space-x-4 mt-4 md:mt-0">
                         <a
-                            href="https://sepolia.etherscan.io/address/0x2f848cC764C77b8EFEBd23cd69ECB2F66A53D52f"
+                            href="https://sepolia.basescan.org/address/TODO_BASE_SEPOLIA_ADDRESS"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-primary transition-colors"
                         >
-                            Contract: 0x2f84...D52f
+                            Contract on BaseScan
                         </a>
-                        <span>Sepolia Testnet</span>
+                        <span>Base Sepolia Testnet</span>
                     </div>
                 </div>
             </Container>

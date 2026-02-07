@@ -3,14 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { usePublicClient, useChainId } from 'wagmi';
 import { createPublicClient, http, parseAbiItem } from 'viem';
-import { sepolia } from 'viem/chains';
+import { baseSepolia } from 'viem/chains';
 import { VOIDRIFT_NFT_ADDRESS } from '@/lib/contracts';
 import { calculateRarityScore } from '@/lib/nftUtils';
 
-// Fallback client for when wallet is not connected
+// Fallback client - always reads from Base Sepolia
 const fallbackClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
+    chain: baseSepolia,
+    transport: http('https://sepolia.base.org'),
 });
 
 export interface LeaderboardEntry {
@@ -49,11 +49,15 @@ export function useLeaderboard(): UseLeaderboardResult {
         setError(null);
 
         try {
-            // Fetch all Transfer events
+            // Get current block and limit range to avoid RPC limits
+            const currentBlock = await publicClient.getBlockNumber();
+            const startBlock = currentBlock > BigInt(100000) ? currentBlock - BigInt(100000) : BigInt(0);
+
+            // Fetch all Transfer events (limited range)
             const transferLogs = await publicClient.getLogs({
                 address: VOIDRIFT_NFT_ADDRESS as `0x${string}`,
                 event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'),
-                fromBlock: BigInt(0),
+                fromBlock: startBlock,
                 toBlock: 'latest',
             });
 

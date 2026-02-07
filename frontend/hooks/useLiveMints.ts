@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { usePublicClient } from 'wagmi';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePublicClient, useChainId } from 'wagmi';
 import { createPublicClient, http, parseAbiItem } from 'viem';
-import { sepolia } from 'viem/chains';
-import { VOIDRIFT_NFT_ADDRESS } from '@/lib/contracts';
-import { getNFTById } from '@/lib/nftUtils';
+import { baseSepolia } from 'viem/chains';
+import { VOIDRIFT_NFT_ADDRESS, SUPPORTED_CHAIN_ID } from '@/lib/contracts';
 
-// Fallback client for when wallet is not connected
+// Fallback client - always reads from Base Sepolia
 const fallbackClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
+    chain: baseSepolia,
+    transport: http('https://sepolia.base.org'),
 });
 
 export interface MintEvent {
@@ -19,6 +18,7 @@ export interface MintEvent {
     timestamp: number;
     txHash: string;
     blockNumber: bigint;
+    species?: string;
     rarity?: string;
 }
 
@@ -31,36 +31,55 @@ interface UseLiveMintsResult {
 
 const MAX_MINTS = 20;
 const POLL_INTERVAL = 10000; // 10 seconds
+// Only scan the last ~50k blocks (~7 days on Sepolia) to avoid RPC limits
+const BLOCK_RANGE = BigInt(50000);
 
 export function useLiveMints(): UseLiveMintsResult {
     const wagmiClient = usePublicClient();
+    const chainId = useChainId();
     const publicClient = wagmiClient || fallbackClient;
     const [recentMints, setRecentMints] = useState<MintEvent[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isLive, setIsLive] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [lastBlock, setLastBlock] = useState<bigint>(BigInt(0));
+    const fetchedRef = useRef(false);
+
+    // Check if on the correct chain
+    const isCorrectChain = chainId === SUPPORTED_CHAIN_ID || !wagmiClient;
 
     // Fetch initial mints and set up polling
     const fetchMints = useCallback(async (fromBlock?: bigint) => {
         if (!publicClient) return;
 
+        // Use fallback client to always read from Sepolia regardless of connected chain
+        const client = isCorrectChain ? publicClient : fallbackClient;
+
         try {
-            // Get recent Minted events
-            const mintLogs = await publicClient.getLogs({
-                address: VOIDRIFT_NFT_ADDRESS as `0x${string}`,
-                event: parseAbiItem('event Minted(address indexed to, uint256 indexed tokenId)'),
-                fromBlock: fromBlock || BigInt(0),
-                toBlock: 'latest',
-            });
+            // Get current block number to limit range
+            const currentBlock = await client.getBlockNumber();
+            const startBlock = fromBlock || (currentBlock > BLOCK_RANGE ? currentBlock - BLOCK_RANGE : BigInt(0));
+
+            // Try Minted events first
+            let mintLogs: Awaited<ReturnType<typeof client.getLogs>> = [];
+            try {
+                mintLogs = await client.getLogs({
+                    address: VOIDRIFT_NFT_ADDRESS as `0x${string}`,
+                    event: parseAbiItem('event Minted(address indexed to, uint256 indexed tokenId)'),
+                    fromBlock: startBlock,
+                    toBlock: 'latest',
+                });
+            } catch {
+                mintLogs = [];
+            }
 
             if (mintLogs.length === 0 && !fromBlock) {
                 // Fallback: try Transfer events from zero address (mints)
-                const transferLogs = await publicClient.getLogs({
+                const transferLogs = await client.getLogs({
                     address: VOIDRIFT_NFT_ADDRESS as `0x${string}`,
                     event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'),
                     args: { from: '0x0000000000000000000000000000000000000000' as `0x${string}` },
-                    fromBlock: BigInt(0),
+                    fromBlock: startBlock,
                     toBlock: 'latest',
                 });
 
@@ -69,45 +88,44 @@ export function useLiveMints(): UseLiveMintsResult {
                     .reverse()
                     .map(log => {
                         const tokenId = log.args.tokenId!.toString();
-                        const nft = getNFTById(Number(tokenId));
                         return {
                             address: log.args.to as string,
                             tokenId,
-                            timestamp: Date.now(), // We don't have exact timestamp without block query
-                            txHash: log.transactionHash,
-                            blockNumber: log.blockNumber,
-                            rarity: nft?.rarity,
+                            timestamp: Date.now(),
+                            txHash: log.transactionHash || '',
+                            blockNumber: log.blockNumber || BigInt(0),
                         };
                     });
 
                 setRecentMints(mints);
                 if (transferLogs.length > 0) {
-                    setLastBlock(transferLogs[transferLogs.length - 1].blockNumber);
+                    setLastBlock(transferLogs[transferLogs.length - 1].blockNumber || currentBlock);
+                } else {
+                    setLastBlock(currentBlock);
                 }
             } else {
                 // Process Minted events
                 const newMints: MintEvent[] = mintLogs.map(log => {
-                    const tokenId = log.args.tokenId!.toString();
-                    const nft = getNFTById(Number(tokenId));
+                    const tokenId = (log as { args: { tokenId?: bigint; to?: string } }).args.tokenId!.toString();
                     return {
-                        address: log.args.to as string,
+                        address: (log as { args: { to?: string } }).args.to as string,
                         tokenId,
                         timestamp: Date.now(),
-                        txHash: log.transactionHash,
-                        blockNumber: log.blockNumber,
-                        rarity: nft?.rarity,
+                        txHash: (log as { transactionHash: string | null }).transactionHash || '',
+                        blockNumber: (log as { blockNumber: bigint | null }).blockNumber || BigInt(0),
                     };
                 });
 
                 if (fromBlock) {
-                    // Append new mints to existing
                     setRecentMints(prev => [...newMints.reverse(), ...prev].slice(0, MAX_MINTS));
                 } else {
                     setRecentMints(newMints.slice(-MAX_MINTS).reverse());
                 }
 
                 if (mintLogs.length > 0) {
-                    setLastBlock(mintLogs[mintLogs.length - 1].blockNumber);
+                    setLastBlock(mintLogs[mintLogs.length - 1].blockNumber || currentBlock);
+                } else {
+                    setLastBlock(currentBlock);
                 }
             }
 
@@ -120,10 +138,12 @@ export function useLiveMints(): UseLiveMintsResult {
         } finally {
             setIsLoading(false);
         }
-    }, [publicClient]);
+    }, [publicClient, isCorrectChain]);
 
     // Initial fetch
     useEffect(() => {
+        if (fetchedRef.current) return;
+        fetchedRef.current = true;
         fetchMints();
     }, [fetchMints]);
 
