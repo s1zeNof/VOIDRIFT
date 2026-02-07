@@ -279,11 +279,16 @@ export default function ProfilePage() {
                             <div className="flex items-center gap-1.5 mb-1">
                                 <Wallet size={12} className="text-cyan-400" />
                                 <p className="text-gray-400 text-[10px] font-rajdhani uppercase tracking-wider">
-                                    {chain?.name || 'Sepolia'} ETH
+                                    Base Sepolia ETH
                                 </p>
                             </div>
                             <p className="text-2xl font-orbitron font-bold text-white mt-1">
-                                {ethBalance ? parseFloat(formatEther(ethBalance.value)).toFixed(4) : '0.0000'}
+                                {isWrongChain
+                                    ? '-.----'
+                                    : ethBalance
+                                        ? parseFloat(formatEther(ethBalance.value)).toFixed(4)
+                                        : '0.0000'
+                                }
                             </p>
                         </div>
                         <div className="bg-black/40 border border-white/10 rounded-xl p-4 min-w-[120px] backdrop-blur-sm">

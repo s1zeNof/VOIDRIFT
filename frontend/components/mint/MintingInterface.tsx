@@ -4,8 +4,8 @@ import { useState, useRef } from 'react';
 import { Container } from '@/components/layout/Container';
 import { motion } from 'framer-motion';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain } from 'wagmi';
-import { parseEther } from 'viem';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId, useSwitchChain, useBalance } from 'wagmi';
+import { parseEther, formatEther } from 'viem';
 import { Minus, Plus, Loader2, AlertTriangle } from 'lucide-react';
 import { VOIDRIFT_NFT_ADDRESS, VOIDRIFT_NFT_ABI, SUPPORTED_CHAIN_ID } from '@/lib/contracts';
 import { MintPreview } from './MintPreview';
@@ -21,6 +21,12 @@ export function MintingInterface() {
     const [isMinting, setIsMinting] = useState(false);
 
     const isWrongChain = isConnected && chainId !== SUPPORTED_CHAIN_ID;
+
+    // ETH balance on Base Sepolia (safe from NaN)
+    const { data: ethBalance } = useBalance({
+        address: address,
+        chainId: SUPPORTED_CHAIN_ID,
+    });
 
     // Contract Reads - always read from Base Sepolia regardless of connected chain
     const { data: totalSupply } = useReadContract({
@@ -186,7 +192,19 @@ export function MintingInterface() {
                                     </span>
                                 </div>
                             </div>
-                            <ConnectButton showBalance={!isWrongChain && isContractDeployed} />
+                            {isConnected ? (
+                                <div className="flex items-center gap-3">
+                                    <span className="text-sm font-mono text-cyan-300 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20">
+                                        {!isWrongChain && ethBalance
+                                            ? `${parseFloat(formatEther(ethBalance.value)).toFixed(4)} ETH`
+                                            : ''
+                                        }
+                                    </span>
+                                    <ConnectButton showBalance={false} />
+                                </div>
+                            ) : (
+                                <ConnectButton showBalance={false} />
+                            )}
                         </div>
 
                         {/* Controls */}
