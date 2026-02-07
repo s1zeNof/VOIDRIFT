@@ -113,7 +113,7 @@ export function MintPreview({ startId, quantity }: MintPreviewProps) {
             <div className="flex items-start gap-2 p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
                 <Sparkles className="text-cyan-400 flex-shrink-0 mt-0.5" size={16} />
                 <div className="text-xs text-cyan-200">
-                    <strong>Genesis Collection</strong> — {previewData.species} ({previewData.rarity}). 222 total supply!
+                    <strong>Genesis Collection</strong> — {previewData.species} ({previewData.rarity}). 10,000 total supply!
                 </div>
             </div>
 

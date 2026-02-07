@@ -104,7 +104,7 @@ export function MintingInterface() {
 
     const currentSupply = totalSupply !== undefined ? Number(totalSupply) : 0;
     const max = maxSupply !== undefined ? Number(maxSupply) : 10000; // Default to 10k collection
-    const priceEth = mintPrice !== undefined ? Number(mintPrice) / 1e18 : 0; // Free mint on testnet
+    const priceEth = mintPrice !== undefined ? Number(mintPrice) / 1e18 : 0.001; // 0.001 ETH testnet default
 
     const percentage = (currentSupply / max) * 100;
     const totalPrice = (priceEth * quantity).toFixed(3);
@@ -151,26 +151,11 @@ export function MintingInterface() {
                                 </p>
                             </div>
 
-                            {!isContractDeployed ? (
-                                <div className="flex flex-col items-center justify-center h-[400px] text-center">
-                                    <div className="w-20 h-20 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl flex items-center justify-center mb-4">
-                                        <AlertTriangle className="text-yellow-400" size={32} />
-                                    </div>
-                                    <h4 className="text-white font-orbitron font-bold mb-2">Contract Pending</h4>
-                                    <p className="text-gray-400 text-sm max-w-xs">
-                                        NFT contract deployment to Base Sepolia is in progress. Check back soon!
-                                    </p>
-                                </div>
-                            ) : totalSupply !== undefined ? (
-                                <MintPreview
-                                    startId={currentSupply + 1}
-                                    quantity={quantity}
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-[400px]">
-                                    <Loader2 className="animate-spin text-primary" size={48} />
-                                </div>
-                            )}
+                            {/* Always show preview from IPFS - works even before contract deploy */}
+                            <MintPreview
+                                startId={!isContractDeployed ? 1 : currentSupply + 1}
+                                quantity={quantity}
+                            />
                         </div>
                     </motion.div>
 
@@ -201,7 +186,7 @@ export function MintingInterface() {
                                     </span>
                                 </div>
                             </div>
-                            <ConnectButton showBalance={!isWrongChain} />
+                            <ConnectButton showBalance={!isWrongChain && isContractDeployed} />
                         </div>
 
                         {/* Controls */}
@@ -238,13 +223,23 @@ export function MintingInterface() {
 
                             <button
                                 onClick={isWrongChain ? handleSwitchChain : handleMint}
-                                disabled={!isConnected}
+                                disabled={!isConnected || !isContractDeployed}
                                 className="w-full py-4 bg-gradient-to-r from-primary to-secondary rounded-lg font-orbitron font-bold text-black text-xl
                          hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(0,255,255,0.3)] cursor-pointer"
                             >
-                                {!isConnected ? 'Connect Wallet' : isWrongChain ? 'SWITCH TO BASE SEPOLIA' : 'MINT NOW'}
+                                {!isConnected ? 'Connect Wallet' : !isContractDeployed ? 'COMING SOON' : isWrongChain ? 'SWITCH TO BASE SEPOLIA' : 'MINT NOW'}
                             </button>
                         </div>
+
+                        {/* Contract pending notice */}
+                        {!isContractDeployed && (
+                            <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-center gap-3">
+                                <AlertTriangle className="text-yellow-400 flex-shrink-0" size={16} />
+                                <p className="text-yellow-200/80 text-xs">
+                                    Contract deployment to Base Sepolia in progress. Minting will be enabled soon!
+                                </p>
+                            </div>
+                        )}
 
                         {/* Progress */}
                         <div className="space-y-2">
