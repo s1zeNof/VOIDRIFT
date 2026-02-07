@@ -218,10 +218,30 @@ export default function ProfilePage() {
                             <Loader2 className="animate-spin text-primary" size={32} />
                         </div>
                     ) : balanceNum === 0 ? (
-                        <div className="text-center py-20 border border-dashed border-white/10 rounded-2xl bg-white/5">
-                            <p className="text-gray-400 font-rajdhani text-lg">No Riftwalkers detected.</p>
-                            <div className="mt-4">
-                                <ConnectButton />
+                        <div className="relative py-20 border border-dashed border-white/10 rounded-2xl bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+                            {/* Background decoration */}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-5">
+                                <div className="w-64 h-64 rounded-full bg-gradient-to-r from-primary to-secondary blur-3xl" />
+                            </div>
+
+                            <div className="relative z-10 flex flex-col items-center">
+                                {/* Empty state icon */}
+                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-white/10 flex items-center justify-center mb-6">
+                                    <Sparkles size={40} className="text-gray-500" />
+                                </div>
+
+                                <h3 className="text-xl font-orbitron font-bold text-white mb-2">No Riftwalkers Yet</h3>
+                                <p className="text-gray-400 font-rajdhani text-base mb-6 max-w-md text-center px-4">
+                                    Your collection is empty. Mint your first Riftwalker NFT to begin your journey through the void.
+                                </p>
+
+                                <a
+                                    href="/mint"
+                                    className="px-8 py-3 bg-gradient-to-r from-primary to-cyan-400 text-black font-rajdhani font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                                >
+                                    <Zap size={18} />
+                                    Mint Your First NFT
+                                </a>
                             </div>
                         </div>
                     ) : (
